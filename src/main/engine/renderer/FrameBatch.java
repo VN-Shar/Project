@@ -11,24 +11,21 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import engine.Window;
-import engine.component._2D.Sprite;
+import engine.component._2D.Frame;
 
-public class SpriteBatch extends RenderBatch {
+public class FrameBatch extends RenderBatch {
 
-    private static final int[] TEX_SLOTS = { 0, 1, 2, 3, 4, 5, 6, 7 };
     private static final int[] vertexAttribute = {
             2, // Position size
             4, // Color size
-            2, // Texture coords size
-            1, // Texture id size
+            2, // Frame coords size
+            1, // Frame id size
     };
 
-    private List<Sprite> sprites = new LinkedList<Sprite>();
-    private List<Texture> textures = new ArrayList<Texture>(); // Max 8 textures for each RenderBatch
+    private List<Frame> frames = new ArrayList<Frame>(); // Max 8 textures for each RenderBatch
 
     private Vector2f[] texCoords = {
             new Vector2f(1, 1),
@@ -37,7 +34,7 @@ public class SpriteBatch extends RenderBatch {
             new Vector2f(0, 1)
     };
 
-    public SpriteBatch(int zIndex, int maxBatchSize) {
+    public FrameBatch(int zIndex, int maxBatchSize) {
         super(zIndex, maxBatchSize, vertexAttribute);
         this.shader = new Shader("D:/Java/Project/assets/shaders/SpriteShader.glsl");
 
@@ -46,24 +43,25 @@ public class SpriteBatch extends RenderBatch {
     @Override
     public void render() {
 
-        Iterator<Sprite> iter = sprites.iterator();
-        Sprite sprite;
+        Iterator<Frame> iter = frames.iterator();
+        Frame frame;
         int spriteIndex = 0;
 
         while (iter.hasNext()) {
-            sprite = iter.next();
+            frame = iter.next();
 
-            if (!sprite.isAlive())
+            if (!frame.isAlive())
                 iter.remove();
 
             else {
-                if (sprite.isDirty()) {
-                    loadVertexProperties(sprite, spriteIndex);
+                if (frame.isDirty()) {
+                    loadVertexProperties(frame, spriteIndex);
                     spriteIndex += 1;
                 }
             }
         }
-        // If there is sprite need to be re-buffer
+
+        // If there is frame need to be re-buffer
         if (spriteIndex > 0) {
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
@@ -72,13 +70,6 @@ public class SpriteBatch extends RenderBatch {
         shader.bind();
         shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
         shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
-
-        for (int i = 0; i < textures.size(); i++) {
-            glActiveTexture(GL_TEXTURE0 + i);
-            textures.get(i).bind();
-        }
-
-        shader.uploadIntArray("uTextures", TEX_SLOTS);
 
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
@@ -92,39 +83,35 @@ public class SpriteBatch extends RenderBatch {
         // glVertex2f(0.0f, 1.0f);
         // glEnd();
 
-        glDrawElements(GL_TRIANGLES, sprites.size() * 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, frames.size() * 6, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
 
         shader.unbind();
-        // Unbind all textures
-        for (int i = 0; i < textures.size(); i++) {
-            textures.get(i).unbind();
-        }
     }
 
-    private void loadVertexProperties(Sprite sprite, int index) {
-        // Find offset within array (4 vertices per sprite)
+    private void loadVertexProperties(Frame frame, int index) {
+        // Find offset within array (4 vertices per frame)
         int offset = index * 4 * VERTEX_SIZE;
 
-        Vector4f color = sprite.getColor();
+        Vector4f color = frame.getColor();
 
-        int texId = textures.indexOf(sprite.getTexture());
+        int texId = 100;
 
-        boolean isRotated = sprite.transform.rotation != 0.0f;
+        boolean isRotated = frame.transform.rotation != 0.0f;
         Matrix4f transformMatrix = new Matrix4f().identity();
 
         if (isRotated) {
-            transformMatrix.translate(sprite.transform.position.x, sprite.transform.position.y, 0f);
+            transformMatrix.translate(frame.transform.position.x, frame.transform.position.y, 0f);
             transformMatrix.rotate(
-                    (float) Math.toRadians(sprite.transform.rotation),
+                    (float) Math.toRadians(frame.transform.rotation),
                     0,
                     0,
                     1);
-            transformMatrix.scale(sprite.transform.scale.x,
-                    sprite.transform.scale.y * Window.getScene().getCamera()
+            transformMatrix.scale(frame.transform.scale.x,
+                    frame.transform.scale.y * Window.getScene().getCamera()
                             .getAspectRatio(),
                     1);
         }
@@ -142,9 +129,9 @@ public class SpriteBatch extends RenderBatch {
             }
 
             Vector4f currentPosition = new Vector4f(
-                    sprite.transform.position.x + (xOffset * sprite.transform.scale.x),
-                    sprite.transform.position.y
-                            + (yOffset * sprite.transform.scale.y * Window.getScene().getCamera().getAspectRatio()),
+                    frame.transform.position.x + (xOffset * frame.transform.scale.x),
+                    frame.transform.position.y
+                            + (yOffset * frame.transform.scale.y * Window.getScene().getCamera().getAspectRatio()),
                     0, 1);
 
             if (isRotated) {
@@ -177,20 +164,12 @@ public class SpriteBatch extends RenderBatch {
 
     }
 
-    public void draw(Sprite sprite) {
-        sprites.add(sprite);
-        Texture texture = sprite.getTexture();
-        if (!textures.contains(texture)) {
-            textures.add(texture);
-        }
+    public void draw(Frame frame) {
+        frames.add(frame);
     }
 
     public boolean hasRoom() {
-        return sprites.size() < maxBatchSize - 1 && hasTextureRoom();
-    }
-
-    public boolean hasTextureRoom() {
-        return textures.size() < TEX_SLOTS.length;
+        return frames.size() < maxBatchSize - 1;
     }
 
     protected int[] generateIndices() {

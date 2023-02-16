@@ -25,7 +25,7 @@ public class Scene {
         queueObjects = new ArrayList<Component>();
         queueFreeObjects = new ArrayList<Component>();
     }
-
+                    
     public List<Component> getComponents() {
         return gameObjects;
     }

@@ -162,7 +162,6 @@ public class Window {
                 System.out.println("FPS: " + Math.round(60 / totalTime));
                 totalTime = 0;
             }
-
         }
     }
 

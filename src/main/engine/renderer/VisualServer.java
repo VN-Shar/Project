@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import engine.component._2D.Frame;
 import engine.component._2D.Sprite;
 
 public class VisualServer {
@@ -41,6 +42,31 @@ public class VisualServer {
         SpriteBatch batch = new SpriteBatch(sprite.getZIndex(), MAX_BATCH_SIZE);
         batches.add(batch);
         batch.draw(sprite);
+        batches.sort(batchComparator);
+
+    }
+
+    public static void draw(Frame frame) {
+        for (RenderBatch batch : batches) {
+
+            if (batch instanceof FrameBatch) {
+
+                if (batch.getZIndex() == frame.getZIndex()) {
+                    if (batch.hasRoom()) {
+                        batch.draw(frame);
+                        return;
+                    }
+                }
+
+                if (batch.getZIndex() > frame.getZIndex()) {
+                    break;
+                }
+            }
+        }
+        System.out.println("Add");
+        FrameBatch batch = new FrameBatch(frame.getZIndex(), MAX_BATCH_SIZE);
+        batches.add(batch);
+        batch.draw(frame);
         batches.sort(batchComparator);
 
     }

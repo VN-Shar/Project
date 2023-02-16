@@ -43,7 +43,7 @@ public class Transform {
 
     @Override
     public String toString() {
-        return "position:" + position.toString() + " scale:" + scale.toString() + " rotation:"
+        return "position:" + position.toString() + " size: " + size.toString() +  " scale:" + scale.toString() + " rotation:"
                 + String.valueOf(rotation);
     }
 
