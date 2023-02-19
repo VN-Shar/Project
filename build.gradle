@@ -60,6 +60,8 @@ dependencies {
 	implementation "org.lwjgl:lwjgl-yoga"
 	implementation "org.lwjgl:lwjgl-zstd"
 
+
+
 	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
 	runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
 	runtimeOnly "org.lwjgl:lwjgl-bgfx::$lwjglNatives"
@@ -98,6 +100,8 @@ dependencies {
 
 	// import opengl math lib
 	implementation 'org.joml:joml:1.10.5'
+	
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
 }
 defaultTasks 'jar'

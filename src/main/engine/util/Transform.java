@@ -10,7 +10,7 @@ public class Transform {
     public float rotation = 0.0f;
 
     public Transform() {
-        init(new Vector2f(), new Vector2f(1, 1), new Vector2f(1, 1));
+        init(new Vector2f(0, 0), new Vector2f(1, 1), new Vector2f(1, 1));
     }
 
     public Transform(Vector2f position) {
@@ -31,6 +31,22 @@ public class Transform {
         this.scale = scale;
     }
 
+    public Vector2f getTopLeft() {
+        return position.sub(size.div(2));
+    }
+
+    public Vector2f getBottomRight() {
+        return position.add(size.div(2));
+    }
+
+    public Vector2f getTopRight() {
+        return new Vector2f(position.x + size.x / 2, position.y - size.y / 2);
+    }
+
+    public Vector2f getBottomLeft() {
+        return new Vector2f(position.x - size.x / 2, position.y + size.y / 2);
+    }
+
     public Transform copy() {
         return new Transform(new Vector2f(this.position), new Vector2f(this.scale));
     }
@@ -43,8 +59,7 @@ public class Transform {
 
     @Override
     public String toString() {
-        return "position:" + position.toString() + " size: " + size.toString() +  " scale:" + scale.toString() + " rotation:"
-                + String.valueOf(rotation);
+        return "position:" + position.toString() + " size: " + size.toString() + " scale:" + scale.toString() + " rotation:" + String.valueOf(rotation);
     }
 
     public boolean equals(Object o) {

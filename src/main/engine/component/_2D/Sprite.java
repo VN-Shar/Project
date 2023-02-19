@@ -2,9 +2,9 @@ package engine.component._2D;
 
 import engine.KeyListener;
 import engine.component.GraphicComponent;
-import engine.renderer.AssetPool;
 import engine.renderer.Texture;
 import engine.renderer.VisualServer;
+import engine.util.AssetPool;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -42,8 +42,7 @@ public class Sprite extends GraphicComponent {
             transform.rotation -= 55 * deltaTime;
 
         Vector2f dir = new Vector2f((float) Math.cos(Math.toRadians(transform.rotation + 90)), (float) Math.sin(
-                Math.toRadians(transform.rotation + 90)));
-        dir.mul(deltaTime);
+                Math.toRadians(transform.rotation + 90))).mul(10 * deltaTime * 144);
 
         if (KeyListener.isKeyPressed(GLFW_KEY_W))
             transform.position.sub(dir);

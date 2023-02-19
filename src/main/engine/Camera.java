@@ -3,18 +3,30 @@ package engine;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
+
+import engine.util.Transform;
 
 public class Camera {
-    public Vector2f position;
-    private Matrix4f projectionMatrix, viewMatrix, inverseProjection, inverseView;
 
+    public enum WindowMode {
+        REMAIN, STRETCH, SCALE;
+    }
+
+    private WindowMode windowMode = WindowMode.REMAIN;
+    private final Vector2f DEFAULT_SIZE = new Vector2f(1920, 1080);
+
+    private Vector2f position;
     private Vector2f size = new Vector2f();
+
+    private Matrix4f projectionMatrix, viewMatrix, inverseProjection, inverseView;
     private float aspectRatio;
 
     private Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
     private Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
-    private float zoom = 1f;
+    private float zoom = 4f;
+    private float windowZoom = 1f;
 
     public Camera(Vector2f position, Vector2f size) {
         this.position = position;
@@ -23,30 +35,48 @@ public class Camera {
         this.viewMatrix = new Matrix4f();
         this.inverseProjection = new Matrix4f();
         this.inverseView = new Matrix4f();
-        adjustProjection();
+        calculateProjection();
     }
 
-    public void setCameraSize(Vector2f size) {
-        this.size = size;
-        adjustProjection();
-    }
+    public void setSize(Vector2f size) {
+        this.windowZoom = 1f;
+        switch (windowMode) {
+        case REMAIN:
+            this.size = size;
+            break;
 
-    public void adjustProjection() {
+        case STRETCH:
+            this.size = DEFAULT_SIZE;
+            break;
+
+        case SCALE:
+            float x = DEFAULT_SIZE.x / size.x;
+            float y = DEFAULT_SIZE.y / size.y;
+            this.size = size;
+            this.windowZoom = x > y ? x : y;
+            break;
+        }
         this.aspectRatio = size.y / size.x;
+        calculateProjection();
+    }
+
+    public Vector2f getSize() {
+        return size;
+    }
+
+    public Vector2f getPosition() {
+        return position;
+    }
+
+    public void calculateProjection() {
         projectionMatrix.identity();
-        projectionMatrix.ortho(
-                -1 * zoom, 1 * zoom,
-                aspectRatio * zoom, -aspectRatio * zoom,
-                0.0f, 100.0f);
+        projectionMatrix.ortho(-zoom * windowZoom / 2, zoom * windowZoom / 2, zoom * windowZoom * aspectRatio / 2, -zoom * windowZoom * aspectRatio / 2, 0.0f, 100.0f);
         inverseProjection = new Matrix4f(projectionMatrix).invert();
     }
 
     public Matrix4f getViewMatrix() {
         viewMatrix.identity();
-        viewMatrix.lookAt(
-                new Vector3f(position.x, position.y, 0.0f),
-                cameraFront.add(position.x, position.y, 0.0f),
-                cameraUp);
+        viewMatrix.lookAt(new Vector3f(position.x, position.y, 0.0f), cameraFront.add(position.x, position.y, 0.0f), cameraUp);
         inverseView = new Matrix4f(this.viewMatrix).invert();
 
         return this.viewMatrix;
@@ -69,12 +99,12 @@ public class Camera {
     }
 
     public void setZoom(float zoom) {
-        adjustProjection();
+        calculateProjection();
         this.zoom = zoom;
     }
 
     public void addZoom(float value) {
-        adjustProjection();
+        calculateProjection();
         this.zoom += value;
     }
 

@@ -35,6 +35,8 @@ public class Component {
         }
 
         components = new ArrayList<Component>();
+
+        ready();
     }
 
     public int getUID() {
@@ -53,6 +55,8 @@ public class Component {
         for (Component component : components) {
             component.update(deltaTime);
         }
+
+        process(deltaTime);
     }
 
     public void render() {
@@ -67,5 +71,15 @@ public class Component {
 
     public boolean isAlive() {
         return this.isAlive;
+    }
+
+    // Overide by children
+    public void ready() {
+
+    }
+
+    // Overide by children
+    public void process(float deltaTime) {
+
     }
 }

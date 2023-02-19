@@ -18,17 +18,6 @@ public class GraphicComponent extends Component {
 
     public Vector4f color = new Vector4f(1, 1, 1, 1);
 
-    public Vector4f getColor() {
-        return this.color;
-    }
-
-    public void setColor(Vector4f color) {
-        if (!this.color.equals(color)) {
-            this.color.set(color);
-            this.isDirty = true;
-        }
-    }
-
     public void setClean() {
         this.isDirty = false;
     }

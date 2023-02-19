@@ -65,6 +65,19 @@ public class Window {
         return Window.scene;
     }
 
+    public int getGLFWWindow() {
+        return this.getGLFWWindow();
+    }
+
+    public float getDeltaTime() {
+        return deltaTime;
+    }
+
+    public float getFps() {
+        fps = Math.round(1 / deltaTime);
+        return fps;
+    }
+
     public void run() {
 
         init();
@@ -85,6 +98,8 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 8);
+        // glEnable(GL_MULTISAMPLE);
         // Enable full screen
         // glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
@@ -122,6 +137,8 @@ public class Window {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         Window.scene = new EditorScene();
+
+        windowSizeChanged(glfwWindow, local_width, local_height);
 
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -165,15 +182,6 @@ public class Window {
         }
     }
 
-    public float getDeltaTime() {
-        return deltaTime;
-    }
-
-    public float getFps() {
-        fps = Math.round(1 / deltaTime);
-        return fps;
-    }
-
     private void close() {
         // Free the memory
         Window.scene.free();
@@ -191,7 +199,7 @@ public class Window {
         setHeight(height);
         setWidth(width);
         glViewport(0, 0, width, height);
-        Window.scene.getCamera().setCameraSize(new Vector2f(width, height));
+        Window.scene.getCamera().setSize(new Vector2f(width, height));
     }
 
     private void update(float delta) {

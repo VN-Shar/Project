@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
@@ -20,8 +21,7 @@ import engine.component._2D.Sprite;
 public class SpriteBatch extends RenderBatch {
 
     private static final int[] TEX_SLOTS = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    private static final int[] vertexAttribute = {
-            2, // Position size
+    private static final int[] vertexAttribute = { 2, // Position size
             4, // Color size
             2, // Texture coords size
             1, // Texture id size
@@ -30,12 +30,7 @@ public class SpriteBatch extends RenderBatch {
     private List<Sprite> sprites = new LinkedList<Sprite>();
     private List<Texture> textures = new ArrayList<Texture>(); // Max 8 textures for each RenderBatch
 
-    private Vector2f[] texCoords = {
-            new Vector2f(1, 1),
-            new Vector2f(1, 0),
-            new Vector2f(0, 0),
-            new Vector2f(0, 1)
-    };
+    private Vector2f[] texCoords = { new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector2f(0, 1) };
 
     public SpriteBatch(int zIndex, int maxBatchSize) {
         super(zIndex, maxBatchSize, vertexAttribute);
@@ -72,14 +67,12 @@ public class SpriteBatch extends RenderBatch {
         shader.bind();
         shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
         shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
+        shader.uploadIntArray("uTextures", TEX_SLOTS);
 
         for (int i = 0; i < textures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i);
             textures.get(i).bind();
         }
-
-        shader.uploadIntArray("uTextures", TEX_SLOTS);
-
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
@@ -92,6 +85,7 @@ public class SpriteBatch extends RenderBatch {
         // glVertex2f(0.0f, 1.0f);
         // glEnd();
 
+        // 6 vertices per texture
         glDrawElements(GL_TRIANGLES, sprites.size() * 6, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
@@ -109,58 +103,57 @@ public class SpriteBatch extends RenderBatch {
         // Find offset within array (4 vertices per sprite)
         int offset = index * 4 * VERTEX_SIZE;
 
-        Vector4f color = sprite.getColor();
+        Vector4f color = sprite.color;
 
         int texId = textures.indexOf(sprite.getTexture());
+
+        // Add vertices with the appropriate properties
+        Vector2f cameraSize = Window.getScene().getCamera().getSize();
+        float aspectRatio = Window.getScene().getCamera().getAspectRatio();
+
+        float positionX = sprite.transform.position.x / cameraSize.x;
+        float positionY = sprite.transform.position.y / cameraSize.y * aspectRatio;
+
+        float sizeX = sprite.getTexture().getWidth() / cameraSize.x;
+        float sizeY = sprite.getTexture().getHeight() / cameraSize.y * aspectRatio;
+
+        float offsetX = sizeX / 2;
+        float offsetY = sizeY / 2;
+
+        Vector4f currentPosition;
 
         boolean isRotated = sprite.transform.rotation != 0.0f;
         Matrix4f transformMatrix = new Matrix4f().identity();
 
         if (isRotated) {
-            transformMatrix.translate(sprite.transform.position.x, sprite.transform.position.y, 0f);
-            transformMatrix.rotate(
-                    (float) Math.toRadians(sprite.transform.rotation),
-                    0,
-                    0,
-                    1);
-            transformMatrix.scale(sprite.transform.scale.x,
-                    sprite.transform.scale.y * Window.getScene().getCamera()
-                            .getAspectRatio(),
-                    1);
+            transformMatrix.translate(positionX, positionY, 0f);
+            transformMatrix.rotate((float) Math.toRadians(sprite.transform.rotation), 0, 0, 1);
+            transformMatrix.scale(sprite.transform.scale.x, sprite.transform.scale.y, 1);
         }
 
-        // Add vertices with the appropriate properties
-        float xOffset = 0.5f;
-        float yOffset = 0.5f;
         for (int i = 0; i < 4; i++) {
             if (i == 1) {
-                yOffset = -0.5f;
+                offsetY = -sizeY / 2;
             } else if (i == 2) {
-                xOffset = -0.5f;
+                offsetX = -sizeX / 2;
             } else if (i == 3) {
-                yOffset = 0.5f;
+                offsetY = sizeY / 2;
             }
 
-            Vector4f currentPosition = new Vector4f(
-                    sprite.transform.position.x + (xOffset * sprite.transform.scale.x),
-                    sprite.transform.position.y
-                            + (yOffset * sprite.transform.scale.y * Window.getScene().getCamera().getAspectRatio()),
-                    0, 1);
+            currentPosition = new Vector4f(positionX + offsetX, positionY + offsetY, 0, 1);
 
-            if (isRotated) {
-                currentPosition = new Vector4f(xOffset, yOffset, 0, 1).mul(transformMatrix);
-            }
+            if (isRotated)
+                currentPosition = new Vector4f(offsetX, offsetY, 0, 1).mul(transformMatrix);
 
             loadVertexProperties(offset, currentPosition, color, texCoords[i], texId);
             offset += VERTEX_SIZE;
         }
     }
 
-    private void loadVertexProperties(int offset, Vector4f currentPosition, Vector4f color,
-            Vector2f texCoords, int texId) {
+    private void loadVertexProperties(int offset, Vector4f position, Vector4f color, Vector2f texCoords, int texId) {
         // Load position
-        vertices[offset] = currentPosition.x;
-        vertices[offset + 1] = currentPosition.y;
+        vertices[offset] = position.x;
+        vertices[offset + 1] = position.y;
 
         // Load color
         vertices[offset + 2] = color.x;

@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.joml.Vector2f;
+import javax.annotation.Nonnull;
 
 import engine.component.Component;
 
 public class Scene {
 
+    private Window window;
     private Camera camera;
 
     private List<Component> gameObjects;
@@ -19,19 +21,28 @@ public class Scene {
     private boolean isPaused = false;
 
     public Scene() {
+        this.window = Window.get();
         this.camera = new Camera(new Vector2f(), new Vector2f(1920, 1080));
 
         gameObjects = new ArrayList<Component>();
         queueObjects = new ArrayList<Component>();
         queueFreeObjects = new ArrayList<Component>();
     }
-                    
+
     public List<Component> getComponents() {
         return gameObjects;
     }
 
+    public Window getWindow() {
+        return window;
+    }
+
     public Camera getCamera() {
         return camera;
+    }
+
+    public void setCamera(@Nonnull Camera camera) {
+        this.camera = camera;
     }
 
     public void queueAddObject(Component component) {

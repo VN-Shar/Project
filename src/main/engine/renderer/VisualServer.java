@@ -6,6 +6,7 @@ import java.util.List;
 
 import engine.component._2D.Frame;
 import engine.component._2D.Sprite;
+import engine.component._2D.Text;
 
 public class VisualServer {
 
@@ -28,15 +29,17 @@ public class VisualServer {
 
     public static void draw(Sprite sprite) {
         for (RenderBatch batch : batches) {
-            if (batch.getZIndex() == sprite.getZIndex()) {
-                if (batch.hasRoom()) {
-                    batch.draw(sprite);
-                    return;
+            if (batch instanceof SpriteBatch) {
+                if (batch.getZIndex() == sprite.getZIndex()) {
+                    if (batch.hasRoom()) {
+                        batch.draw(sprite);
+                        return;
+                    }
                 }
-            }
 
-            if (batch.getZIndex() > sprite.getZIndex()) {
-                break;
+                if (batch.getZIndex() > sprite.getZIndex()) {
+                    break;
+                }
             }
         }
         SpriteBatch batch = new SpriteBatch(sprite.getZIndex(), MAX_BATCH_SIZE);
@@ -63,11 +66,32 @@ public class VisualServer {
                 }
             }
         }
-        System.out.println("Add");
         FrameBatch batch = new FrameBatch(frame.getZIndex(), MAX_BATCH_SIZE);
         batches.add(batch);
         batch.draw(frame);
         batches.sort(batchComparator);
+    }
 
+    public static void draw(Text text) {
+        for (RenderBatch batch : batches) {
+
+            if (batch instanceof TextBatch) {
+
+                if (batch.getZIndex() == text.getZIndex()) {
+                    if (batch.hasRoom()) {
+                        batch.draw(text);
+                        return;
+                    }
+                }
+
+                if (batch.getZIndex() > text.getZIndex()) {
+                    break;
+                }
+            }
+        }
+        TextBatch batch = new TextBatch(text.getZIndex(), MAX_BATCH_SIZE);
+        batches.add(batch);
+        batch.draw(text);
+        batches.sort(batchComparator);
     }
 }
