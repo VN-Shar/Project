@@ -64,11 +64,11 @@ public class Font {
     public void init(int bitmapWidth, int bitmapHeight, int fontHeight) {
 
         textureID = glGenTextures();
-        charData = STBTTBakedChar.malloc(96);
-        
+        charData = STBTTBakedChar.malloc(8000);
+
         ByteBuffer bitmap = BufferUtils.createByteBuffer(bitmapWidth * bitmapHeight);
         stbtt_BakeFontBitmap(ttf, fontHeight, bitmap, bitmapWidth, bitmapHeight, 32, charData);
-        
+
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, bitmapWidth, bitmapHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bitmap);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

@@ -17,7 +17,7 @@ public class Frame extends GraphicComponent {
     }
 
     public void init(Transform transform) {
-        this.transform = transform;
+        setTransform(transform);
         VisualServer.draw(this);
     }
 }

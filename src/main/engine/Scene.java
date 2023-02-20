@@ -27,6 +27,8 @@ public class Scene {
         gameObjects = new ArrayList<Component>();
         queueObjects = new ArrayList<Component>();
         queueFreeObjects = new ArrayList<Component>();
+
+        ready();
     }
 
     public List<Component> getComponents() {
@@ -68,6 +70,8 @@ public class Scene {
         for (Component component : gameObjects) {
             component.update(deltaTime);
         }
+
+        process(deltaTime);
     }
 
     public void render() {
@@ -100,5 +104,15 @@ public class Scene {
         for (Component Component : gameObjects) {
             Component.free();
         }
+    }
+
+    // Overide by children
+    public void ready() {
+
+    }
+
+    // Overide by children
+    public void process(float deltaTime) {
+
     }
 }

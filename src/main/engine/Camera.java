@@ -3,9 +3,6 @@ package engine;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
-
-import engine.util.Transform;
 
 public class Camera {
 
@@ -25,7 +22,7 @@ public class Camera {
     private Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
     private Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
-    private float zoom = 4f;
+    private float zoom = 2f;
     private float windowZoom = 1f;
 
     public Camera(Vector2f position, Vector2f size) {

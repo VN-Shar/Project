@@ -4,17 +4,22 @@ import engine.component.GraphicComponent;
 import engine.renderer.VisualServer;
 import engine.util.AssetPool;
 import engine.util.Font;
-import engine.util.Transform;
+import engine.util.Alignment.HorizontalAlignment;
+import engine.util.Alignment.VerticalAlignment;
 
 public class Text extends GraphicComponent {
 
     private Font font;
 
-    public String content = new String();
-    public Transform transform = new Transform();
+    private String content = new String();
+
+    private String defaultFontPath = "D:/Java/Project/assets/fonts/NotoSans-Black.ttf";
 
     public boolean isKerning = false;
-    public String defaultFontPath = "D:/Java/Project/assets/fonts/Roboto-Black.ttf";
+    public boolean autoWarp = true;
+
+    public VerticalAlignment verticalAlignment = VerticalAlignment.CENTER;
+    public HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTER;
 
     public Text() {
         init(AssetPool.getFont(defaultFontPath), new String());
@@ -40,6 +45,14 @@ public class Text extends GraphicComponent {
 
     public Font getFont() {
         return this.font;
+    }
+
+    public void setText(String content) {
+        this.content = content;
+    }
+
+    public String getText() {
+        return this.content;
     }
 
 }

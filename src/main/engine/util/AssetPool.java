@@ -49,7 +49,7 @@ public class AssetPool {
             return AssetPool.fonts.get(absolutePath);
 
         } else {
-            Font font = new Font(resourceName, 120, 4 * 512, 4 * 512);
+            Font font = new Font(resourceName, 24, 4 * 512, 4 * 512);
             AssetPool.fonts.put(absolutePath, font);
             return font;
         }

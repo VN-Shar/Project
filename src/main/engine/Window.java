@@ -22,8 +22,8 @@ public class Window {
     private String title;
     private long glfwWindow;
 
-    private static final int DEFAULT_WINDOW_WIDTH = 1080;
-    private static final int DEFAULT_WINDOW_HEIGHT = 720;
+    private static final int DEFAULT_WINDOW_WIDTH = 1920;
+    private static final int DEFAULT_WINDOW_HEIGHT = 1080;
 
     private static Scene scene = null;
     private static Window window = null;
@@ -157,10 +157,8 @@ public class Window {
             glClearColor(0, 0, 0, 1);
             beginFrame();
 
-            if (deltaTime >= 0) {
-                update(deltaTime);
-                render();
-            }
+            update(deltaTime);
+            render();
 
             if (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE)) {
                 glfwSetWindowShouldClose(glfwWindow, true);
@@ -180,6 +178,10 @@ public class Window {
                 totalTime = 0;
             }
         }
+    }
+
+    public static float getTime() {
+        return (float) glfwGetTime();
     }
 
     private void close() {

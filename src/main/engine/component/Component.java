@@ -14,10 +14,10 @@ public class Component {
     private int uid = -1;
     private String name;
 
-    protected List<Component> components;
-    protected boolean isAlive = true;
+    private List<Component> components;
+    private boolean isAlive = true;
 
-    public Transform transform = new Transform();
+    private Transform transform = new Transform();
 
     public Component() {
 
@@ -51,6 +51,14 @@ public class Component {
         components.add(component);
     }
 
+    public Transform getTransform() {
+        return this.transform;
+    }
+
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+    }
+
     public void update(float deltaTime) {
         for (Component component : components) {
             component.update(deltaTime);
@@ -71,6 +79,10 @@ public class Component {
 
     public boolean isAlive() {
         return this.isAlive;
+    }
+
+    public void setAlive(boolean value) {
+        this.isAlive = value;
     }
 
     // Overide by children

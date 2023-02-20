@@ -36,44 +36,9 @@ void main()
     if(fTexId>=0){
         
         int id=int(fTexId);
-        float c;
-        
-        switch(id){
-            case 0:
-            c=texture(uTextures[0],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-            case 1:
-            c=texture(uTextures[1],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-            case 2:
-            c=texture(uTextures[2],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-            case 3:
-            c=texture(uTextures[3],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-            case 4:
-            c=texture(uTextures[4],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-            case 5:
-            c=texture(uTextures[5],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-            case 6:
-            c=texture(uTextures[6],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-            case 7:
-            c=texture(uTextures[7],fTexCoords).b;
-            gl_FragColor=vec4(c,c,c,1)*fColor;
-            break;
-        }
-    }else{
-        gl_FragColor=vec4(1,0,0,1);
+        float r = 1.;
+        r =texture(uTextures[0],fTexCoords).a;
+        gl_FragColor = vec4(r,r,r,r) * fColor;
     }
 }
 
