@@ -58,16 +58,21 @@ public class Camera {
     }
 
     public Vector2f getSize() {
-        return size;
+        return new Vector2f(size);
     }
 
     public Vector2f getPosition() {
-        return position;
+        return new Vector2f(position);
     }
 
     public void calculateProjection() {
         projectionMatrix.identity();
-        projectionMatrix.ortho(-zoom * windowZoom / 2, zoom * windowZoom / 2, zoom * windowZoom * aspectRatio / 2, -zoom * windowZoom * aspectRatio / 2, 0.0f, 100.0f);
+        projectionMatrix.ortho(//
+                -zoom * windowZoom / 2, //
+                zoom * windowZoom / 2, //
+                zoom * windowZoom * aspectRatio / 2, //
+                -zoom * windowZoom * aspectRatio / 2, //
+                0.0f, 100.0f);
         inverseProjection = new Matrix4f(projectionMatrix).invert();
     }
 
@@ -96,13 +101,13 @@ public class Camera {
     }
 
     public void setZoom(float zoom) {
-        calculateProjection();
         this.zoom = zoom;
+        calculateProjection();
     }
 
     public void addZoom(float value) {
-        calculateProjection();
         this.zoom += value;
+        calculateProjection();
     }
 
     public float getAspectRatio() {

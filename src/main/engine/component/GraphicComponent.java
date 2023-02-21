@@ -1,14 +1,15 @@
 package engine.component;
 
 import org.joml.Vector2f;
-import org.joml.Vector4f;
+
+import engine.util.Color;
 
 public class GraphicComponent extends Component {
 
     private boolean isDirty = true;
     private boolean isShow = true;
     private int zIndex = 0;
-    private Vector4f color = new Vector4f(1, 1, 1, 1);
+    private Color color = new Color(1, 1, 1, 1);
 
     public static Vector2f[] texCoords = { new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector2f(0, 1) };
 
@@ -44,11 +45,11 @@ public class GraphicComponent extends Component {
         return this.zIndex;
     }
 
-    public void setColor(Vector4f color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 
-    public Vector4f getColor() {
+    public Color getColor() {
         return this.color;
     }
 

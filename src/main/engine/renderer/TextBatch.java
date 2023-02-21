@@ -1,9 +1,5 @@
 package engine.renderer;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector4f;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,8 +7,11 @@ import java.util.List;
 
 import engine.Window;
 import engine.component._2D.Text;
-import engine.util.Font;
+import engine.util.Color;
 
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector4f;
 import org.lwjgl.stb.*;
 import org.lwjgl.system.*;
 
@@ -218,7 +217,7 @@ public class TextBatch extends RenderBatch {
 
             int fontId = fonts.indexOf(font);
             int offset = index * 4 * VERTEX_SIZE;
-            Vector4f color = text.getColor();
+            Color color = text.getColor();
 
             Vector2f cameraSize = Window.getScene().getCamera().getSize();
             float aspectRatio = Window.getScene().getCamera().getAspectRatio();
@@ -285,17 +284,17 @@ public class TextBatch extends RenderBatch {
         }
     }
 
-    private void loadVertexProperties(int offset, Vector4f position, Vector4f color, Vector2f texCoord, int fontId) {
+    private void loadVertexProperties(int offset, Vector4f position, Color color, Vector2f texCoord, int fontId) {
         // Load position
 
         vertices[offset] = position.x;
         vertices[offset + 1] = position.y;
 
         // Load color
-        vertices[offset + 2] = color.x;
-        vertices[offset + 3] = color.y;
-        vertices[offset + 4] = color.z;
-        vertices[offset + 5] = color.w;
+        vertices[offset + 2] = color.r;
+        vertices[offset + 3] = color.g;
+        vertices[offset + 4] = color.b;
+        vertices[offset + 5] = color.a;
 
         // Load texture coordinates
         vertices[offset + 6] = texCoord.x;

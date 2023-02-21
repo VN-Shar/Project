@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import engine.util.Transform;
+import engine.util.math.Transform;
 
 public class Component {
 

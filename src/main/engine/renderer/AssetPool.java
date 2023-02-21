@@ -1,11 +1,8 @@
-package engine.util;
+package engine.renderer;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import engine.renderer.Shader;
-import engine.renderer.Texture;
 
 public class AssetPool {
     private static Map<String, Shader> shaders = new HashMap<>();

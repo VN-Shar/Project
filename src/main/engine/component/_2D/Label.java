@@ -1,15 +1,11 @@
 package engine.component._2D;
 
-import org.joml.Vector2f;
-import org.joml.Vector4f;
-
 import engine.component.GraphicComponent;
-import engine.input.InputListener;
-import engine.util.Font;
+import engine.renderer.Font;
+import engine.util.Color;
 import engine.util.Alignment.HorizontalAlignment;
 import engine.util.Alignment.VerticalAlignment;
-
-import static org.lwjgl.glfw.GLFW.*;
+import engine.util.math.Transform;
 
 public class Label extends GraphicComponent {
 
@@ -20,15 +16,26 @@ public class Label extends GraphicComponent {
     public HorizontalAlignment horizontalAlignment = HorizontalAlignment.BEGIN;
 
     public Label() {
-        frame = new Frame(getTransform());
+        init(new Transform());
+    }
+
+    public Label(Transform transform) {
+        init(transform);
+    }
+
+    private void init(Transform transform) {
+
+        frame = new Frame();
         text = new Text();
 
         text.horizontalAlignment = horizontalAlignment;
         text.verticalAlignment = verticalAlignment;
+
+        setTransform(transform);
+        reposition();
     }
 
-    private void init() {
-
+    public void reposition() {
         frame.setTransform(getTransform().copy());
         text.setTransform(getTransform().copy().setPosition(frame.getTransform().copy().getTopLeft()));
     }
@@ -41,11 +48,11 @@ public class Label extends GraphicComponent {
         return this.text.getText();
     }
 
-    public void setTextColor(Vector4f color) {
+    public void setTextColor(Color color) {
         this.text.setColor(color);
     }
 
-    public Vector4f getTextColor() {
+    public Color getTextColor() {
         return this.text.getColor();
     }
 
@@ -65,31 +72,11 @@ public class Label extends GraphicComponent {
         return this.text.getFont();
     }
 
-    public void setBackgroundColor(Vector4f color) {
+    public void setBackgroundColor(Color color) {
         this.frame.setColor(color);
     }
 
-    public Vector4f getBackgroundColor() {
+    public Color getBackgroundColor() {
         return this.frame.getColor();
-    }
-
-    @Override
-    public void process(float deltaTime) {
-        // if (InputListener.isKeyPressed(GLFW_KEY_D))
-        // getTransform().addRotation(55 * deltaTime);
-        // else if (InputListener.isKeyPressed(GLFW_KEY_A))
-        // getTransform().addRotation(-55 * deltaTime);
-
-        // Vector2f dir = new Vector2f((float)
-        // Math.cos(Math.toRadians(getTransform().getRotation() + 90)),
-        // (float) Math.sin(Math.toRadians(getTransform().getRotation() + 90))).mul(10 *
-        // deltaTime * 144);
-
-        // if (InputListener.isKeyPressed(GLFW_KEY_W))
-        // getTransform().move(dir.mul(-1));
-        // else if (InputListener.isKeyPressed(GLFW_KEY_S))
-        // getTransform().move(dir);
-
-        // init();
     }
 }

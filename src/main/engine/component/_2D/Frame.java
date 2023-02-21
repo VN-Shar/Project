@@ -4,9 +4,13 @@ import org.joml.Vector2f;
 
 import engine.component.GraphicComponent;
 import engine.renderer.VisualServer;
-import engine.util.Transform;
+import engine.util.math.Transform;
 
 public class Frame extends GraphicComponent {
+
+    public Frame() {
+        init(new Transform());
+    }
 
     public Frame(Transform transform) {
         init(transform);

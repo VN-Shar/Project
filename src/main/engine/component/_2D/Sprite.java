@@ -1,9 +1,9 @@
 package engine.component._2D;
 
 import engine.component.GraphicComponent;
+import engine.renderer.AssetPool;
 import engine.renderer.Texture;
 import engine.renderer.VisualServer;
-import engine.util.AssetPool;
 
 
 public class Sprite extends GraphicComponent {

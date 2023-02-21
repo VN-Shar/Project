@@ -1,9 +1,5 @@
 package engine.renderer;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector4f;
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
@@ -15,8 +11,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector4f;
+
 import engine.Window;
 import engine.component._2D.Sprite;
+import engine.util.Color;
 
 public class SpriteBatch extends RenderBatch {
 
@@ -104,7 +105,7 @@ public class SpriteBatch extends RenderBatch {
         // Find offset within array (4 vertices per sprite)
         int offset = index * 4 * VERTEX_SIZE;
 
-        Vector4f color = sprite.getColor();
+        Color color = sprite.getColor();
 
         int texId = textures.indexOf(sprite.getTexture());
 
@@ -152,16 +153,16 @@ public class SpriteBatch extends RenderBatch {
         }
     }
 
-    private void loadVertexProperties(int offset, Vector4f position, Vector4f color, Vector2f texCoords, int texId) {
+    private void loadVertexProperties(int offset, Vector4f position, Color color, Vector2f texCoords, int texId) {
         // Load position
         vertices[offset] = position.x;
         vertices[offset + 1] = position.y;
 
         // Load color
-        vertices[offset + 2] = color.x;
-        vertices[offset + 3] = color.y;
-        vertices[offset + 4] = color.z;
-        vertices[offset + 5] = color.w;
+        vertices[offset + 2] = color.r;
+        vertices[offset + 3] = color.g;
+        vertices[offset + 4] = color.b;
+        vertices[offset + 5] = color.a;
 
         // Load texture coordinates
         vertices[offset + 6] = texCoords.x;

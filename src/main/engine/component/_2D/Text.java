@@ -1,9 +1,9 @@
 package engine.component._2D;
 
 import engine.component.GraphicComponent;
+import engine.renderer.AssetPool;
+import engine.renderer.Font;
 import engine.renderer.VisualServer;
-import engine.util.AssetPool;
-import engine.util.Font;
 import engine.util.Alignment.HorizontalAlignment;
 import engine.util.Alignment.VerticalAlignment;
 

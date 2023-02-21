@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.joml.Vector2f;
 import javax.annotation.Nonnull;
+
+import org.joml.Vector2f;
 
 import engine.component.Component;
 

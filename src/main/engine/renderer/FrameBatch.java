@@ -16,6 +16,7 @@ import java.util.List;
 
 import engine.Window;
 import engine.component._2D.Frame;
+import engine.util.Color;
 
 public class FrameBatch extends RenderBatch {
 
@@ -90,7 +91,7 @@ public class FrameBatch extends RenderBatch {
         // Find offset within array (4 vertices per frame)
         int offset = index * 4 * VERTEX_SIZE;
 
-        Vector4f color = frame.getColor();
+        Color color = frame.getColor();
 
         // Add vertices with the appropriate properties
         Vector2f cameraSize = Window.getScene().getCamera().getSize();
@@ -136,16 +137,15 @@ public class FrameBatch extends RenderBatch {
         }
     }
 
-    private void loadVertexProperties(int offset, Vector4f position, Vector4f color) {
+    private void loadVertexProperties(int offset, Vector4f position, Color color) {
         // Load position
         vertices[offset] = position.x;
         vertices[offset + 1] = position.y;
-
         // Load color
-        vertices[offset + 2] = color.x;
-        vertices[offset + 3] = color.y;
-        vertices[offset + 4] = color.z;
-        vertices[offset + 5] = color.w;
+        vertices[offset + 2] = color.r;
+        vertices[offset + 3] = color.g;
+        vertices[offset + 4] = color.b;
+        vertices[offset + 5] = color.a;
 
         vertices[offset + 6] = 0;
         vertices[offset + 7] = 0;

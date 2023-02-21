@@ -83,11 +83,16 @@ public class InputListener {
     }
 
     public static Vector2f getScreenMousePosition() {
-        return position;
+        return new Vector2f(position);
     }
 
     public static Vector2f getGlobalMousePosition() {
         Camera camera = Window.getScene().getCamera();
-        return new Vector2f(camera.getPosition());
+
+        return new Vector2f(camera.getPosition().add(getScreenMousePosition().add(camera.getSize().div(-2)).mul(camera.getZoom())));
+    }
+
+    public static Vector2f getMouseScroll() {
+        return new Vector2f(scroll);
     }
 }
