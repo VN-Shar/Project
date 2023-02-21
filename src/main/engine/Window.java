@@ -7,6 +7,10 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import engine.editor.scenes.EditorScene;
+import engine.event.EventHandler;
+import engine.event.EventType;
+import engine.event.EventType.WindowResize;
+import engine.input.InputListener;
 import engine.renderer.VisualServer;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -22,8 +26,8 @@ public class Window {
     private String title;
     private long glfwWindow;
 
-    private static final int DEFAULT_WINDOW_WIDTH = 1920;
-    private static final int DEFAULT_WINDOW_HEIGHT = 1080;
+    private static final int DEFAULT_WINDOW_WIDTH = 1080;
+    private static final int DEFAULT_WINDOW_HEIGHT = 720;
 
     private static Scene scene = null;
     private static Window window = null;
@@ -51,8 +55,16 @@ public class Window {
         this.height = height;
     }
 
+    public int getHeight() {
+        return this.height;
+    }
+
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    public int getWidth() {
+        return this.width;
     }
 
     public void changeScene(Scene newScene) {
@@ -65,17 +77,16 @@ public class Window {
         return Window.scene;
     }
 
-    public int getGLFWWindow() {
-        return this.getGLFWWindow();
+    public long getGLFWWindow() {
+        return this.glfwWindow;
     }
 
     public float getDeltaTime() {
-        return deltaTime;
+        return this.deltaTime;
     }
 
     public float getFps() {
-        fps = Math.round(1 / deltaTime);
-        return fps;
+        return this.fps;
     }
 
     public void run() {
@@ -89,6 +100,8 @@ public class Window {
         // Setup an error callback
         GLFWErrorCallback.createPrint(System.err).set();
 
+        EventHandler.invoke(EventType.EngineInit);
+
         // Initialize GLFW
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW.");
@@ -96,6 +109,8 @@ public class Window {
 
         // Configure GLFW
         glfwDefaultWindowHints();
+        // No title
+        // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_SAMPLES, 8);
@@ -116,12 +131,13 @@ public class Window {
         }
 
         // Callbacks
-        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
-        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
-        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
-        glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
-        glfwSetWindowRefreshCallback(glfwWindow, window -> render());
+        glfwSetCursorPosCallback(glfwWindow, InputListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, InputListener::mouseButtonCallback);
+        glfwSetScrollCallback(glfwWindow, InputListener::mouseScrollCallback);
+        glfwSetKeyCallback(glfwWindow, InputListener::keyCallback);
         glfwSetWindowSizeCallback(glfwWindow, this::windowSizeChanged);
+
+        glfwSetWindowRefreshCallback(glfwWindow, window -> render());
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
@@ -136,9 +152,12 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        Window.scene = new EditorScene();
+        // Init the default scene
+        Window.scene = new EditorScene(window);
 
         windowSizeChanged(glfwWindow, local_width, local_height);
+
+        EventHandler.invoke(EventType.EngineLoad);
 
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -160,7 +179,7 @@ public class Window {
             update(deltaTime);
             render();
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE)) {
+            if (InputListener.isKeyPressed(GLFW_KEY_ESCAPE)) {
                 glfwSetWindowShouldClose(glfwWindow, true);
             }
 
@@ -174,21 +193,24 @@ public class Window {
             frame += 1;
             totalTime += deltaTime;
             if (frame % 60 == 0) {
-                System.out.println("FPS: " + Math.round(60 / totalTime));
+                fps = Math.round(60 / totalTime);
                 totalTime = 0;
+
+                System.out.println("FPS: " + fps);
             }
         }
     }
 
-    
     public static float getTime() {
         return (float) glfwGetTime();
     }
 
     private void close() {
-        // Free the memory
+        EventHandler.invoke(EventType.EngineClose);
+
         Window.scene.free();
 
+        // Free the memory
         glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
 
@@ -199,10 +221,17 @@ public class Window {
 
     private void windowSizeChanged(long glfwWindow, int width, int height) {
         this.glfwWindow = glfwWindow;
-        setHeight(height);
-        setWidth(width);
-        glViewport(0, 0, width, height);
-        Window.scene.getCamera().setSize(new Vector2f(width, height));
+
+        GLFWVidMode vidMode = Objects.requireNonNull(glfwGetVideoMode(glfwGetPrimaryMonitor()));
+        int local_height = Math.min(height, vidMode.height());
+        int local_width = Math.min(width, vidMode.width());
+
+        setHeight(local_height);
+        setWidth(local_width);
+        glViewport(0, 0, local_width, local_height);
+        Window.scene.getCamera().setSize(new Vector2f(local_width, local_height));
+
+        EventHandler.invoke(new WindowResize(new Vector2f(getWidth(), getHeight())));
     }
 
     private void update(float delta) {
@@ -219,10 +248,8 @@ public class Window {
     }
 
     private void endFrame() {
-        KeyListener.endFrame();
-        MouseListener.endFrame();
+        InputListener.endFrame();
         Window.scene.endFrame();
-
     }
 
 }

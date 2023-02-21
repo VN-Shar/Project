@@ -20,9 +20,9 @@ public class Scene {
 
     private boolean isPaused = false;
 
-    public Scene() {
-        this.window = Window.get();
-        this.camera = new Camera(new Vector2f(), new Vector2f(1920, 1080));
+    public Scene(Window window) {
+        this.window = window;
+        this.camera = new Camera(new Vector2f(), new Vector2f(window.getWidth(), window.getHeight()));
 
         gameObjects = new ArrayList<Component>();
         queueObjects = new ArrayList<Component>();

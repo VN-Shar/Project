@@ -3,8 +3,8 @@ package engine.component._2D;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
-import engine.KeyListener;
 import engine.component.GraphicComponent;
+import engine.input.InputListener;
 import engine.util.Font;
 import engine.util.Alignment.HorizontalAlignment;
 import engine.util.Alignment.VerticalAlignment;
@@ -75,19 +75,21 @@ public class Label extends GraphicComponent {
 
     @Override
     public void process(float deltaTime) {
-        if (KeyListener.isKeyPressed(GLFW_KEY_D))
-            getTransform().addRotation(55 * deltaTime);
-        else if (KeyListener.isKeyPressed(GLFW_KEY_A))
-            getTransform().addRotation(-55 * deltaTime);
+        // if (InputListener.isKeyPressed(GLFW_KEY_D))
+        // getTransform().addRotation(55 * deltaTime);
+        // else if (InputListener.isKeyPressed(GLFW_KEY_A))
+        // getTransform().addRotation(-55 * deltaTime);
 
-        Vector2f dir = new Vector2f((float) Math.cos(Math.toRadians(getTransform().getRotation() + 90)),
-                (float) Math.sin(Math.toRadians(getTransform().getRotation() + 90))).mul(10 * deltaTime * 144);
+        // Vector2f dir = new Vector2f((float)
+        // Math.cos(Math.toRadians(getTransform().getRotation() + 90)),
+        // (float) Math.sin(Math.toRadians(getTransform().getRotation() + 90))).mul(10 *
+        // deltaTime * 144);
 
-        if (KeyListener.isKeyPressed(GLFW_KEY_W))
-            getTransform().move(dir.mul(-1));
-        else if (KeyListener.isKeyPressed(GLFW_KEY_S))
-            getTransform().move(dir);
+        // if (InputListener.isKeyPressed(GLFW_KEY_W))
+        // getTransform().move(dir.mul(-1));
+        // else if (InputListener.isKeyPressed(GLFW_KEY_S))
+        // getTransform().move(dir);
 
-        init();
+        // init();
     }
 }

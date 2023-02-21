@@ -3,23 +3,23 @@ package engine.event;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
-public class Observer {
+public class Observer<T> {
 
-    public LinkedList<Consumer<Signal>> callbacks = new LinkedList<>();
+    public LinkedList<Consumer<T>> callbacks = new LinkedList<>();
 
-    public void emit(Signal type) {
-        for (Consumer<Signal> callback : callbacks) {
+    public void invoke(T type) {
+        for (Consumer<T> callback : callbacks) {
             callback.accept(type);
         }
     }
 
-    public void addListener(Consumer<Signal> callback) {
+    public void addListener(Consumer<T> callback) {
         if (callbacks.contains(callback))
             return;
         callbacks.add(callback);
     }
 
-    public void removeListener(Consumer<Signal> callback) {
+    public void removeListener(Consumer<T> callback) {
         callbacks.remove(callback);
     }
 
