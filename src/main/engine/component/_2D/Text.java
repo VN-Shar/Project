@@ -43,6 +43,10 @@ public class Text extends GraphicComponent {
         VisualServer.draw(this);
     }
 
+    public void setFont(Font font) {
+        this.font = font;
+    }
+
     public Font getFont() {
         return this.font;
     }

@@ -17,14 +17,15 @@ public class EditorScene extends Scene {
         queueAddObject(new Sprite("D:/Java/Project/assets/images/vscodebackground.jpg"));
 
         label = new Label();
-        label.getTransform().setSize(new Vector2f(100, 60));
+        label.getTransform().setSize(new Vector2f(150, 60));
         Vector2f size = new Vector2f(getCamera().getSize());
         label.getTransform().setPosition(size.div(-1.5f));
-        
+        label.setFontSize(40);
+
         queueAddObject(label);
-        
+
     }
-    
+
     @Override
     public void process(float deltaTime) {
         label.setText("FPS: " + String.valueOf(Window.get().getFps()));

@@ -180,6 +180,7 @@ public class Window {
         }
     }
 
+    
     public static float getTime() {
         return (float) glfwGetTime();
     }
@@ -210,6 +211,7 @@ public class Window {
 
     private void render() {
         VisualServer.render();
+        Window.scene.render();
     }
 
     private void beginFrame() {

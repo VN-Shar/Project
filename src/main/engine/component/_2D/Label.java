@@ -5,6 +5,7 @@ import org.joml.Vector4f;
 
 import engine.KeyListener;
 import engine.component.GraphicComponent;
+import engine.util.Font;
 import engine.util.Alignment.HorizontalAlignment;
 import engine.util.Alignment.VerticalAlignment;
 
@@ -46,6 +47,22 @@ public class Label extends GraphicComponent {
 
     public Vector4f getTextColor() {
         return this.text.getColor();
+    }
+
+    public void setFontSize(int size) {
+        this.text.getFont().setFontHeight(size);
+    }
+
+    public int getFontSize() {
+        return this.text.getFont().getFontHeight();
+    }
+
+    public void setFont(Font font) {
+        this.text.setFont(font);
+    }
+
+    public Font getFont() {
+        return this.text.getFont();
     }
 
     public void setBackgroundColor(Vector4f color) {
