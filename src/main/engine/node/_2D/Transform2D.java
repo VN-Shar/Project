@@ -7,16 +7,12 @@ import org.joml.Vector2f;
 
 public class Transform2D {
 
-    private Vector2f position;
-    private Vector2f size;
-    private Vector2f scale;
+    private Vector2f position = new Vector2f(0, 0);
+    private Vector2f size = new Vector2f(1, 1);
+    private Vector2f scale = new Vector2f(1, 1);
     private float rotation = 0.0f;
 
     public LinkedList<Consumer<Transform2D>> callbacks = new LinkedList<>();
-
-    public Transform2D() {
-        init(new Vector2f(0, 0), new Vector2f(1, 1), new Vector2f(1, 1), 0);
-    }
 
     public Transform2D(Vector2f position) {
         init(position, new Vector2f(1, 1), new Vector2f(1, 1), 0);
