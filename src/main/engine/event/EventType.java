@@ -18,11 +18,11 @@ public enum EventType implements Event {
         }
     }
 
-    public static class WindowResize implements Event {
+    public static class WindowResized implements Event {
 
         public final Vector2f size;
 
-        public WindowResize(Vector2f size) {
+        public WindowResized(Vector2f size) {
             this.size = size;
         }
     }

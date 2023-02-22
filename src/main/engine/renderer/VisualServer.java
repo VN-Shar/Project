@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import engine.component._2D.Frame;
-import engine.component._2D.Sprite;
-import engine.component._2D.Text;
+import engine.node._2D.Frame;
+import engine.node._2D.Sprite;
+import engine.node._2D.Text;
 
 public class VisualServer {
 

@@ -7,11 +7,10 @@ import org.lwjgl.system.*;
 import java.io.IOException;
 import java.nio.*;
 
+import static engine.io.IOUtil.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBTruetype.*;
 import static org.lwjgl.system.MemoryStack.*;
-
-import static engine.util.IOUtil.*;
 
 public class Font {
 

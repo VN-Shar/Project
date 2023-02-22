@@ -15,8 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import engine.Window;
-import engine.component._2D.Frame;
-import engine.util.Color;
+import engine.node.UI.Color;
+import engine.node._2D.Frame;
+import engine.node._2D.Transform2D;
 
 public class FrameBatch extends RenderBatch {
 
@@ -95,26 +96,31 @@ public class FrameBatch extends RenderBatch {
 
         // Add vertices with the appropriate properties
         Vector2f cameraSize = Window.getScene().getCamera().getSize();
+        Vector2f cameraPosition = Window.getScene().getCamera().getPosition();
         float aspectRatio = Window.getScene().getCamera().getAspectRatio();
 
-        float positionX = frame.getTransform().getPosition().x / cameraSize.x;
-        float positionY = frame.getTransform().getPosition().y / cameraSize.y * aspectRatio;
+        Transform2D transform = frame.getGlobalTransform();
 
-        float sizeX = frame.getTransform().getSize().x / cameraSize.x;
-        float sizeY = frame.getTransform().getSize().y / cameraSize.y * aspectRatio;
+        // System.out.println(transform);
+
+        float positionX = (transform.getPosition().x - cameraPosition.x) / cameraSize.x;
+        float positionY = (transform.getPosition().y - cameraPosition.y) / cameraSize.y * aspectRatio;
+
+        float sizeX = transform.getSize().x / cameraSize.x;
+        float sizeY = transform.getSize().y / cameraSize.y * aspectRatio;
 
         float offsetX = sizeX / 2;
         float offsetY = sizeY / 2;
 
         Vector4f currentPosition;
 
-        boolean isRotated = frame.getTransform().getRotation() != 0.0f;
+        boolean isRotated = transform.getRotation() != 0.0f;
         Matrix4f transformMatrix = new Matrix4f().identity();
 
         if (isRotated) {
             transformMatrix.translate(positionX, positionY, 0f);
-            transformMatrix.rotate((float) Math.toRadians(frame.getTransform().getRotation()), 0, 0, 1);
-            transformMatrix.scale(frame.getTransform().getScale().x, frame.getTransform().getScale().y, 1);
+            transformMatrix.rotate((float) Math.toRadians(transform.getRotation()), 0, 0, 1);
+            transformMatrix.scale(transform.getScale().x, transform.getScale().y, 1);
         }
 
         for (int i = 0; i < 4; i++) {
@@ -126,8 +132,7 @@ public class FrameBatch extends RenderBatch {
                 offsetY = sizeY / 2;
             }
 
-            currentPosition = new Vector4f(positionX + offsetX * frame.getTransform().getScale().x,
-                    positionY + offsetY * frame.getTransform().getScale().x, 0, 1);
+            currentPosition = new Vector4f(positionX + offsetX * transform.getScale().x, positionY + offsetY * transform.getScale().x, 0, 1);
 
             if (isRotated)
                 currentPosition = new Vector4f(offsetX, offsetY, 0, 1).mul(transformMatrix);

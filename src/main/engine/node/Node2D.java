@@ -1,10 +1,10 @@
-package engine.component;
+package engine.node;
 
 import org.joml.Vector2f;
 
-import engine.util.Color;
+import engine.node.UI.Color;
 
-public class GraphicComponent extends Component {
+public class Node2D extends Node {
 
     private boolean isDirty = true;
     private boolean isShow = true;

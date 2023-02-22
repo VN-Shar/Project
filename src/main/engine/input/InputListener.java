@@ -18,7 +18,7 @@ public class InputListener {
 
     // Mouse listener
     private static Vector2f scroll = new Vector2f();
-    private static Vector2f position = new Vector2f(), lastPosition = new Vector2f();
+    private static Vector2f position = new Vector2f(), lastPosition = new Vector2f(), relative = new Vector2f();
     private static boolean mouseButtonPressed[] = new boolean[9];
     private static boolean isMouseButtonPressed;
 
@@ -45,6 +45,9 @@ public class InputListener {
 
         position.x = (float) newPositionX;
         position.y = (float) newPositionY;
+
+        relative.x = position.x - lastPosition.x;
+        relative.y = position.y - lastPosition.y;
 
     }
 
@@ -90,6 +93,13 @@ public class InputListener {
         Camera camera = Window.getScene().getCamera();
 
         return new Vector2f(camera.getPosition().add(getScreenMousePosition().add(camera.getSize().div(-2)).mul(camera.getZoom())));
+    }
+
+    public static Vector2f getMouseRelative() {
+        if (isDragging()) {
+            return new Vector2f(relative);
+        }
+        return relative.set(0, 0);
     }
 
     public static Vector2f getMouseScroll() {

@@ -6,8 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import engine.Window;
-import engine.component._2D.Text;
-import engine.util.Color;
+import engine.node.UI.Color;
+import engine.node._2D.Text;
+import engine.node._2D.Transform2D;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -165,6 +166,8 @@ public class TextBatch extends RenderBatch {
             float lineY = 0;
             float textSizeX = 0, textSizeY = 0;
 
+            Transform2D transform = text.getGlobalTransform();
+
             List<Vector2f> positions = new ArrayList<Vector2f>(4 * content.length());
             List<Vector2f> texCoords = new ArrayList<Vector2f>(4 * content.length());
 
@@ -194,7 +197,7 @@ public class TextBatch extends RenderBatch {
                     }
                     float x0 = quad.x0(), x1 = quad.x1(), y0 = quad.y0() + lineY + lineGap, y1 = quad.y1() + lineY + lineGap;
 
-                    if (x1 > text.getTransform().getSize().x || y1 > text.getTransform().getSize().y)
+                    if (x1 > transform.getSize().x || y1 > transform.getSize().y)
                         continue;
 
                     textSizeX = Math.max(x1, textSizeX);
@@ -220,14 +223,18 @@ public class TextBatch extends RenderBatch {
             Color color = text.getColor();
 
             Vector2f cameraSize = Window.getScene().getCamera().getSize();
+            Vector2f cameraPosition = Window.getScene().getCamera().getPosition();
             float aspectRatio = Window.getScene().getCamera().getAspectRatio();
 
-            float positionX = text.getTransform().getPosition().x / cameraSize.x;
-            float positionY = text.getTransform().getPosition().y / cameraSize.y * aspectRatio;
+            float positionX = (transform.getPosition().x - cameraPosition.x) / cameraSize.x;
+            float positionY = (transform.getPosition().y - cameraPosition.y) / cameraSize.y * aspectRatio;
+
+            float sizeX = transform.getSize().x / 2;
+            float sizeY = transform.getSize().y / 2;
 
             Vector4f currentPosition;
 
-            boolean isRotated = text.getTransform().getRotation() != 0.0f;
+            boolean isRotated = transform.getRotation() != 0.0f;
             Matrix4f transformMatrix = new Matrix4f().identity();
 
             float offsetX = 0, offsetY = 0;
@@ -238,11 +245,11 @@ public class TextBatch extends RenderBatch {
                 break;
 
             case CENTER:
-                offsetX = (text.getTransform().getSize().x - textSizeX) / 2;
+                offsetX = (transform.getSize().x - textSizeX) / 2;
                 break;
 
             case END:
-                offsetX = text.getTransform().getSize().x - textSizeX;
+                offsetX = (transform.getSize().x - textSizeX);
                 break;
             }
 
@@ -252,30 +259,30 @@ public class TextBatch extends RenderBatch {
                 break;
 
             case CENTER:
-                offsetY = (text.getTransform().getSize().y - textSizeY) / 2;
+                offsetY = (transform.getSize().y - textSizeY) / 2;
                 break;
 
             case END:
-                offsetY = text.getTransform().getSize().y - textSizeY;
+                offsetY = (transform.getSize().y - textSizeY);
                 break;
             }
 
             if (isRotated) {
                 transformMatrix.translate(positionX, positionY, 0f);
-                transformMatrix.rotate((float) Math.toRadians(text.getTransform().getRotation()), 0, 0, 1);
-                transformMatrix.scale(text.getTransform().getScale().x, text.getTransform().getScale().y, 1);
+                transformMatrix.rotate((float) Math.toRadians(transform.getRotation()), 0, 0, 1);
+                transformMatrix.scale(transform.getScale().x, transform.getScale().y, 1);
             }
 
             for (int i = 0; i < positions.size(); i++) {
 
                 if (isRotated)
                     currentPosition = new Vector4f(//
-                            (positions.get(i).x + offsetX) / cameraSize.x, //
-                            (positions.get(i).y + offsetY) / cameraSize.y * aspectRatio, 0, 1).mul(transformMatrix);
+                            (positions.get(i).x + offsetX - sizeX) / cameraSize.x, //
+                            (positions.get(i).y + offsetY - sizeY) / cameraSize.y * aspectRatio, 0, 1).mul(transformMatrix);
                 else
                     currentPosition = new Vector4f(//
-                            positionX + (positions.get(i).x + offsetX) / cameraSize.x * text.getTransform().getScale().x,
-                            positionY + (positions.get(i).y + offsetY) / cameraSize.y * aspectRatio * text.getTransform().getScale().y, 0, 1);
+                            positionX + (positions.get(i).x + offsetX - sizeX) / cameraSize.x * transform.getScale().x,
+                            positionY + (positions.get(i).y + offsetY - sizeY) / cameraSize.y * aspectRatio * transform.getScale().y, 0, 1);
 
                 loadVertexProperties(offset, currentPosition, color, texCoords.get(i), fontId);
                 offset += VERTEX_SIZE;

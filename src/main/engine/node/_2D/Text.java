@@ -1,13 +1,13 @@
-package engine.component._2D;
+package engine.node._2D;
 
-import engine.component.GraphicComponent;
+import engine.node.Node2D;
+import engine.node._2D.Alignment.HorizontalAlignment;
+import engine.node._2D.Alignment.VerticalAlignment;
 import engine.renderer.AssetPool;
 import engine.renderer.Font;
 import engine.renderer.VisualServer;
-import engine.util.Alignment.HorizontalAlignment;
-import engine.util.Alignment.VerticalAlignment;
 
-public class Text extends GraphicComponent {
+public class Text extends Node2D {
 
     private Font font;
 

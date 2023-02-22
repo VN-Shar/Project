@@ -8,16 +8,16 @@ import javax.annotation.Nonnull;
 
 import org.joml.Vector2f;
 
-import engine.component.Component;
+import engine.node.Node;
 
 public class Scene {
 
     private Window window;
     private Camera camera;
 
-    private List<Component> gameObjects;
-    private List<Component> queueObjects;
-    private List<Component> queueFreeObjects;
+    private List<Node> gameObjects;
+    private List<Node> queueObjects;
+    private List<Node> queueFreeObjects;
 
     private boolean isPaused = false;
 
@@ -25,14 +25,14 @@ public class Scene {
         this.window = window;
         this.camera = new Camera(new Vector2f(), new Vector2f(window.getWidth(), window.getHeight()));
 
-        gameObjects = new ArrayList<Component>();
-        queueObjects = new ArrayList<Component>();
-        queueFreeObjects = new ArrayList<Component>();
+        gameObjects = new ArrayList<Node>();
+        queueObjects = new ArrayList<Node>();
+        queueFreeObjects = new ArrayList<Node>();
 
         ready();
     }
 
-    public List<Component> getComponents() {
+    public List<Node> getComponents() {
         return gameObjects;
     }
 
@@ -48,19 +48,19 @@ public class Scene {
         this.camera = camera;
     }
 
-    public void queueAddObject(Component component) {
+    public void queueAddObject(Node component) {
         queueObjects.add(component);
     }
 
-    public void queueRemoveObject(Component component) {
+    public void queueRemoveObject(Node component) {
         queueFreeObjects.add(component);
     }
 
-    public void addObject(Component component) {
+    public void addObject(Node component) {
         gameObjects.add(component);
     }
 
-    public void removeObject(Component component) {
+    public void removeObject(Node component) {
         gameObjects.remove(component);
     }
 
@@ -68,7 +68,7 @@ public class Scene {
         if (isPaused)
             return;
 
-        for (Component component : gameObjects) {
+        for (Node component : gameObjects) {
             component.update(deltaTime);
         }
 
@@ -76,14 +76,14 @@ public class Scene {
     }
 
     public void render() {
-        for (Component component : gameObjects) {
+        for (Node component : gameObjects) {
             component.render();
         }
     }
 
     public void beginFrame() {
-        Iterator<Component> it = queueObjects.iterator();
-        Component component;
+        Iterator<Node> it = queueObjects.iterator();
+        Node component;
         while (it.hasNext()) {
             component = it.next();
             addObject(component);
@@ -92,8 +92,8 @@ public class Scene {
     }
 
     public void endFrame() {
-        Iterator<Component> it = queueFreeObjects.iterator();
-        Component component;
+        Iterator<Node> it = queueFreeObjects.iterator();
+        Node component;
         while (it.hasNext()) {
             component = it.next();
             it.remove();
@@ -102,7 +102,7 @@ public class Scene {
     }
 
     public void free() {
-        for (Component Component : gameObjects) {
+        for (Node Component : gameObjects) {
             Component.free();
         }
     }

@@ -16,8 +16,9 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import engine.Window;
-import engine.component._2D.Sprite;
-import engine.util.Color;
+import engine.node.UI.Color;
+import engine.node._2D.Sprite;
+import engine.node._2D.Transform2D;
 
 public class SpriteBatch extends RenderBatch {
 
@@ -111,10 +112,13 @@ public class SpriteBatch extends RenderBatch {
 
         // Add vertices with the appropriate properties
         Vector2f cameraSize = Window.getScene().getCamera().getSize();
+        Vector2f cameraPosition = Window.getScene().getCamera().getPosition();
         float aspectRatio = Window.getScene().getCamera().getAspectRatio();
 
-        float positionX = sprite.getTransform().getPosition().x / cameraSize.x;
-        float positionY = sprite.getTransform().getPosition().y / cameraSize.y * aspectRatio;
+        Transform2D transform = sprite.getGlobalTransform();
+
+        float positionX = (transform.getPosition().x - cameraPosition.x) / cameraSize.x;
+        float positionY = (transform.getPosition().y - cameraPosition.y) / cameraSize.y * aspectRatio;
 
         float sizeX = sprite.getTexture().getWidth() / cameraSize.x;
         float sizeY = sprite.getTexture().getHeight() / cameraSize.y * aspectRatio;
@@ -124,13 +128,13 @@ public class SpriteBatch extends RenderBatch {
 
         Vector4f currentPosition;
 
-        boolean isRotated = sprite.getTransform().getRotation() != 0.0f;
+        boolean isRotated = transform.getRotation() != 0.0f;
         Matrix4f transformMatrix = new Matrix4f().identity();
 
         if (isRotated) {
             transformMatrix.translate(positionX, positionY, 0f);
-            transformMatrix.rotate((float) Math.toRadians(sprite.getTransform().getRotation()), 0, 0, 1);
-            transformMatrix.scale(sprite.getTransform().getScale().x, sprite.getTransform().getScale().y, 1);
+            transformMatrix.rotate((float) Math.toRadians(transform.getRotation()), 0, 0, 1);
+            transformMatrix.scale(transform.getScale().x, transform.getScale().y, 1);
         }
 
         for (int i = 0; i < 4; i++) {
@@ -142,8 +146,7 @@ public class SpriteBatch extends RenderBatch {
                 offsetY = sizeY / 2;
             }
 
-            currentPosition = new Vector4f(positionX + offsetX * sprite.getTransform().getScale().x,
-                    positionY + offsetY * sprite.getTransform().getScale().y, 0, 1);
+            currentPosition = new Vector4f(positionX + offsetX * transform.getScale().x, positionY + offsetY * transform.getScale().y, 0, 1);
 
             if (isRotated)
                 currentPosition = new Vector4f(offsetX, offsetY, 0, 1).mul(transformMatrix);

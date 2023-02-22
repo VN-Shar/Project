@@ -1,13 +1,12 @@
-package engine.component._2D;
+package engine.node._2D;
 
-import engine.component.GraphicComponent;
+import engine.node.Node2D;
+import engine.node.UI.Color;
+import engine.node._2D.Alignment.HorizontalAlignment;
+import engine.node._2D.Alignment.VerticalAlignment;
 import engine.renderer.Font;
-import engine.util.Color;
-import engine.util.Alignment.HorizontalAlignment;
-import engine.util.Alignment.VerticalAlignment;
-import engine.util.math.Transform;
 
-public class Label extends GraphicComponent {
+public class Label extends Node2D {
 
     private Text text;
     private Frame frame;
@@ -16,28 +15,34 @@ public class Label extends GraphicComponent {
     public HorizontalAlignment horizontalAlignment = HorizontalAlignment.BEGIN;
 
     public Label() {
-        init(new Transform());
+        init(new Transform2D());
     }
 
-    public Label(Transform transform) {
+    public Label(Transform2D transform) {
         init(transform);
     }
 
-    private void init(Transform transform) {
+    private void init(Transform2D transform) {
 
         frame = new Frame();
         text = new Text();
+
+        addChild(frame);
+        addChild(text);
 
         text.horizontalAlignment = horizontalAlignment;
         text.verticalAlignment = verticalAlignment;
 
         setTransform(transform);
-        reposition();
     }
 
-    public void reposition() {
-        frame.setTransform(getTransform().copy());
-        text.setTransform(getTransform().copy().setPosition(frame.getTransform().copy().getTopLeft()));
+    @Override
+    public void setTransform(Transform2D transform) {
+        transform.onTransformChanged((trans) -> {
+            frame.getTransform().setSize(trans.getSize());
+            text.getTransform().setSize(trans.getSize());
+        });
+        super.setTransform(transform);
     }
 
     public void setText(String text) {

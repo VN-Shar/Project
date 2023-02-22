@@ -1,12 +1,12 @@
-package engine.component._2D;
+package engine.node._2D;
 
-import engine.component.GraphicComponent;
+import engine.node.Node2D;
 import engine.renderer.AssetPool;
 import engine.renderer.Texture;
 import engine.renderer.VisualServer;
 
 
-public class Sprite extends GraphicComponent {
+public class Sprite extends Node2D {
 
     private Texture texture = new Texture();
 

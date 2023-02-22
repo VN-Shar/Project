@@ -10,6 +10,9 @@ public class Camera {
         REMAIN, STRETCH, SCALE;
     }
 
+    private static final float MIN_ZOOM = 0.01f;
+    private static final float MAX_ZOOM = 30f;
+
     private WindowMode windowMode = WindowMode.REMAIN;
     private final Vector2f DEFAULT_SIZE = new Vector2f(1920, 1080);
 
@@ -65,6 +68,10 @@ public class Camera {
         return new Vector2f(position);
     }
 
+    public void setPosition(Vector2f position) {
+        this.position = position;
+    }
+
     public void calculateProjection() {
         projectionMatrix.identity();
         projectionMatrix.ortho(//
@@ -78,7 +85,7 @@ public class Camera {
 
     public Matrix4f getViewMatrix() {
         viewMatrix.identity();
-        viewMatrix.lookAt(new Vector3f(position.x, position.y, 0.0f), cameraFront.add(position.x, position.y, 0.0f), cameraUp);
+        viewMatrix.lookAt(new Vector3f(0, 0, 0.0f), cameraFront.add(0, 0, 0.0f), cameraUp);
         inverseView = new Matrix4f(this.viewMatrix).invert();
 
         return this.viewMatrix;
@@ -101,13 +108,18 @@ public class Camera {
     }
 
     public void setZoom(float zoom) {
-        this.zoom = zoom;
-        calculateProjection();
+        // Zoom can not be <= 0
+        if (zoom >= MIN_ZOOM && zoom <= MAX_ZOOM) {
+            this.zoom = zoom;
+            calculateProjection();
+        }
     }
 
     public void addZoom(float value) {
-        this.zoom += value;
-        calculateProjection();
+        if (zoom + value >= MIN_ZOOM && zoom + value <= MAX_ZOOM) {
+            this.zoom += value;
+            calculateProjection();
+        }
     }
 
     public float getAspectRatio() {
