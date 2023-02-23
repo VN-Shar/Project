@@ -81,6 +81,12 @@ public class Transform2D {
         return this;
     }
 
+    public Transform2D setScale(float scale) {
+        this.scale = new Vector2f(scale, scale);
+        invoke();
+        return this;
+    }
+
     public Transform2D addScale(Vector2f scale) {
         this.scale.mul(scale);
         invoke();

@@ -29,6 +29,8 @@ public class Label extends Node2D {
 
         addChild(frame);
         addChild(text);
+        
+        setPositionType(PositionType.CENTER);
 
         text.horizontalAlignment = horizontalAlignment;
         text.verticalAlignment = verticalAlignment;

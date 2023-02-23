@@ -4,9 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import engine.event.Event;
 import engine.event.EventHandler;
-import engine.event.EventType.CameraSizeChanged;
-import engine.event.EventType.CameraPositionChanged;
 
 public class Camera {
 
@@ -31,6 +30,33 @@ public class Camera {
 
     private float zoom = 2f;
     private float windowZoom = 1f;
+
+    public static class CameraSizeChanged implements Event {
+
+        public final Vector2f size;
+
+        public CameraSizeChanged(Vector2f size) {
+            this.size = size;
+        }
+    }
+
+    public static class CameraPositionChanged implements Event {
+
+        public final Vector2f position;
+
+        public CameraPositionChanged(Vector2f position) {
+            this.position = position;
+        }
+    }
+
+    public static class CameraZoomChanged implements Event {
+
+        public final float zoom;
+
+        public CameraZoomChanged(Float zoom) {
+            this.zoom = zoom;
+        }
+    }
 
     public Camera(Vector2f position, Vector2f size) {
         this.position = position;
@@ -119,6 +145,7 @@ public class Camera {
         if (zoom >= MIN_ZOOM && zoom <= MAX_ZOOM) {
             this.zoom = zoom;
             getProjection();
+            EventHandler.invoke(new CameraZoomChanged(zoom));
         }
     }
 
@@ -126,6 +153,7 @@ public class Camera {
         if (zoom + value >= MIN_ZOOM && zoom + value <= MAX_ZOOM) {
             this.zoom += value;
             getProjection();
+            EventHandler.invoke(new CameraZoomChanged(zoom));
         }
     }
 

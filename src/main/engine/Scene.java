@@ -15,9 +15,9 @@ public class Scene {
     private Window window;
     private Camera camera;
 
-    private List<Node> gameObjects;
-    private List<Node> queueObjects;
-    private List<Node> queueFreeObjects;
+    private List<Node> nodes;
+    private List<Node> queueNodes;
+    private List<Node> queueFreeNodes;
 
     private boolean isPaused = false;
 
@@ -25,15 +25,15 @@ public class Scene {
         this.window = window;
         this.camera = new Camera(new Vector2f(), new Vector2f(window.getWidth(), window.getHeight()));
 
-        gameObjects = new ArrayList<Node>();
-        queueObjects = new ArrayList<Node>();
-        queueFreeObjects = new ArrayList<Node>();
+        nodes = new ArrayList<Node>();
+        queueNodes = new ArrayList<Node>();
+        queueFreeNodes = new ArrayList<Node>();
 
         ready();
     }
 
-    public List<Node> getComponents() {
-        return gameObjects;
+    public List<Node> getNodes() {
+        return nodes;
     }
 
     public Window getWindow() {
@@ -48,62 +48,59 @@ public class Scene {
         this.camera = camera;
     }
 
-    public void queueAddObject(Node component) {
-        queueObjects.add(component);
+    // Add node to the queue
+    public void addChild(Node node) {
+        queueNodes.add(node);
     }
 
-    public void queueRemoveObject(Node component) {
-        queueFreeObjects.add(component);
-    }
-
-    public void addObject(Node component) {
-        gameObjects.add(component);
-    }
-
-    public void removeObject(Node component) {
-        gameObjects.remove(component);
+    public void queueFree(Node node) {
+        queueFreeNodes.add(node);
     }
 
     public void update(float deltaTime) {
         if (isPaused)
             return;
 
-        for (Node component : gameObjects) {
-            component.update(deltaTime);
+        for (Node node : nodes) {
+            node.update(deltaTime);
         }
 
         process(deltaTime);
     }
 
     public void render() {
-        for (Node component : gameObjects) {
-            component.render();
+        for (Node node : nodes) {
+            node.render();
         }
     }
 
     public void beginFrame() {
-        Iterator<Node> it = queueObjects.iterator();
-        Node component;
+        // Add nodes at be beginning of the frame
+        Iterator<Node> it = queueNodes.iterator();
+        Node node;
         while (it.hasNext()) {
-            component = it.next();
-            addObject(component);
+            node = it.next();
+            node.setTree(this);
+            nodes.add(node);
             it.remove();
         }
     }
 
     public void endFrame() {
-        Iterator<Node> it = queueFreeObjects.iterator();
-        Node component;
+        // Remove nodes at the end of the frame
+        Iterator<Node> it = queueFreeNodes.iterator();
+        Node node;
         while (it.hasNext()) {
-            component = it.next();
+            node = it.next();
+            nodes.remove(node);
+            node.free();
             it.remove();
-            component.free();
         }
     }
 
     public void free() {
-        for (Node Component : gameObjects) {
-            Component.free();
+        for (Node node : nodes) {
+            node.free();
         }
     }
 

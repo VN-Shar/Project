@@ -76,6 +76,10 @@ public class Window {
         return Window.scene;
     }
 
+    public static Camera getCamera() {
+        return getScene().getCamera();
+    }
+
     public long getGLFWWindow() {
         return this.glfwWindow;
     }

@@ -1,6 +1,5 @@
 package engine.event;
 
-import org.joml.Vector2f;
 
 import engine.Scene;
 
@@ -15,24 +14,6 @@ public enum EventType implements Event {
 
         public SceneChanged(Scene scene) {
             this.scene = scene;
-        }
-    }
-
-    public static class CameraSizeChanged implements Event {
-
-        public final Vector2f size;
-
-        public CameraSizeChanged(Vector2f size) {
-            this.size = size;
-        }
-    }
-
-    public static class CameraPositionChanged implements Event {
-
-        public final Vector2f position;
-
-        public CameraPositionChanged(Vector2f position) {
-            this.position = position;
         }
     }
 }

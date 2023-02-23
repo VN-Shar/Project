@@ -292,12 +292,12 @@ public class TextBatch extends RenderBatch {
 
                 if (isRotated)
                     currentPosition = new Vector4f(//
-                            (positions.get(i).x + offsetX) / cameraSize.x, //
-                            (positions.get(i).y + offsetY) / cameraSize.y, 0, 1).mul(transformMatrix);
+                            (positions.get(i).x - offsetX) / cameraSize.x, //
+                            (positions.get(i).y - offsetY) / cameraSize.y, 0, 1).mul(transformMatrix);
                 else
                     currentPosition = new Vector4f(//
-                            positionX + (positions.get(i).x + offsetX) / cameraSize.x * transform.getScale().x,
-                            positionY + (positions.get(i).y + offsetY) / cameraSize.y * transform.getScale().y, 0, 1);
+                            positionX + (positions.get(i).x - offsetX) / cameraSize.x * transform.getScale().x,
+                            positionY + (positions.get(i).y - offsetY) / cameraSize.y * transform.getScale().y, 0, 1);
 
                 loadVertexProperties(offset, currentPosition, color, texCoords.get(i), fontId);
                 offset += VERTEX_SIZE;

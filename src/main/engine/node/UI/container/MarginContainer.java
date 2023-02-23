@@ -1,7 +1,10 @@
 package engine.node.UI.container;
 
+import org.joml.Vector2f;
+
 import engine.node.Node;
 import engine.node.Node2D;
+import engine.node._2D.FlagType.PositionType;
 
 public class MarginContainer extends Container {
 
@@ -9,6 +12,10 @@ public class MarginContainer extends Container {
     private float marginRight = 0;
     private float marginTop = 0;
     private float marginBottom = 0;
+
+    public MarginContainer() {
+        getTransform().onTransformChanged((trans) -> resize());
+    }
 
     public float getMarginLeft() {
         return this.marginLeft;
@@ -49,15 +56,21 @@ public class MarginContainer extends Container {
         setMarginBottom(margin);
     }
 
+    public void addChild(Node2D child) {
+        super.addChild(child);
+        child.setPositionType(PositionType.TOP_LEFT);
+    }
+
     public void resize() {
         for (Node c : getChildren()) {
             // Skip node that is not inherit from Node2D
             if (!(c instanceof Node2D))
                 continue;
 
-            // Node2D child = (Node2D) c;
-            // TODO: Make a TOP-LEFT/CENTER coordinate option
+            Node2D child = (Node2D) c;
+
+            child.getTransform().setPosition(new Vector2f(marginLeft, marginTop));
+            child.getTransform().setSize(new Vector2f(getTransform().getSize()).sub(marginLeft + marginRight, marginTop + marginBottom));
         }
     }
-
 }

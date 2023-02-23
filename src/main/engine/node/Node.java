@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import engine.Scene;
 import engine.node._2D.Transform2D;
 
 public class Node {
@@ -20,6 +21,7 @@ public class Node {
     private int zIndex = 0;
 
     private Transform2D transform;
+    private Scene tree;
 
     public Node() {
 
@@ -52,8 +54,19 @@ public class Node {
         return this.name;
     }
 
+    public void setTree(Scene tree) {
+        this.tree = tree;
+        for (Node child : getChildren())
+            child.setTree(tree);
+    }
+
+    public Scene getTree() {
+        return tree;
+    }
+
     public void addChild(Node child) {
         child.parent = this;
+        child.tree = tree;
         children.add(child);
     }
 

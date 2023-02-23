@@ -6,6 +6,7 @@ import engine.Camera;
 import engine.Scene;
 import engine.Window;
 import engine.input.InputListener;
+import engine.node.UI.CanvasLayer;
 import engine.node.UI.Color;
 import engine.node._2D.Label;
 import engine.node._2D.Sprite;
@@ -16,6 +17,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class EditorScene extends Scene {
 
     Label label;
+    Sprite background;
+    CanvasLayer canvas;
 
     public EditorScene(Window window) {
         super(window);
@@ -24,15 +27,19 @@ public class EditorScene extends Scene {
     @Override
     public void ready() {
 
-        queueAddObject(new Sprite("D:/Java/Project/assets/images/vscodebackground.jpg"));
-
+        background = new Sprite("D:/Java/Project/assets/images/vscodebackground.jpg");
         label = new Label();
+        canvas = new CanvasLayer();
+        
+        canvas.addChild(background);
+        addChild(label);
+
         label.getTransform().setSize(new Vector2f(500, 70));
         label.setBackgroundColor(new Color(0.1f, 0.1f, 0.1f, 0.8f));
         label.setTextColor(new Color(1, 1, 1, 1));
-        label.setPositionType(PositionType.TOP_LEFT);
+        
+        label.setPositionType(PositionType.CENTER);
 
-        queueAddObject(label);
     }
 
     @Override
