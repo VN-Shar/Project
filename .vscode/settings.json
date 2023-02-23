@@ -3,8 +3,13 @@
   "java.compile.nullAnalysis.mode": "disabled",
   "cSpell.words": [
     "Codepoint",
+    "Fontinfo",
+    "glsl",
     "lerp",
+    "opengl",
+    "Programi",
     "REBECCA",
+    "Shaderi",
     "stbtt"
   ],
   "java.debug.settings.onBuildFailureProceed": true,

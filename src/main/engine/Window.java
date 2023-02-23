@@ -113,7 +113,6 @@ public class Window {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_SAMPLES, 8);
-        // glEnable(GL_MULTISAMPLE);
         // Enable full screen
         // glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
