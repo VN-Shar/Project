@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 public class EventHandler {
 
     // Signals container
-    public static HashMap<String, Observer<Event>> observers = new HashMap<>();
+    private static HashMap<String, Observer<Event>> observers = new HashMap<>();
 
     private static final String GLOBAL = "Global ";
 
@@ -14,7 +14,7 @@ public class EventHandler {
         String eventName = getSignalName(source, type);
 
         if (observers.containsKey(eventName)) {
-            throw new IllegalArgumentException("Signal from " + source + " with type " + type + " already exits");
+            throw new IllegalArgumentException("Signal from <" + source + "> with type <" + type + "> already exits");
         } else {
             Observer<Event> observer = new Observer<Event>();
             observer.addListener(callback);
@@ -25,21 +25,19 @@ public class EventHandler {
     public static <T extends Event> void connect(Class<T> type, Consumer<Event> callback) {
         String eventName = getSignalName(GLOBAL, type);
 
-        if (observers.containsKey(eventName)) {
-            throw new IllegalArgumentException("Signal from global with type " + type + " already exits");
-        } else {
-            Observer<Event> observer = new Observer<Event>();
-            observer.addListener(callback);
-            observers.put(eventName, observer);
-        }
+        if (!observers.containsKey(eventName))
+            observers.put(eventName, new Observer<Event>());
+
+        Observer<Event> observer = observers.get(eventName);
+        observer.addListener(callback);
     }
 
-    public static <T extends Event> void disconnect(Object source, Class<T> type, Consumer<Event> callback) {
+    public static <T extends Event> void disconnect(Object source, Class<T> type) {
         String eventName = getSignalName(source, type);
         observers.remove(eventName);
     }
 
-    public static <T extends Event> void disconnect(Class<T> type, Consumer<Event> callback) {
+    public static <T extends Event> void disconnect(Class<T> type) {
         String eventName = getSignalName(GLOBAL, type);
         observers.remove(eventName);
     }
@@ -52,6 +50,7 @@ public class EventHandler {
 
     public static <T extends Event> void invoke(T type) {
         Observer<Event> observer = observers.get(getSignalName(GLOBAL, type));
+
         if (observer != null)
             observer.invoke(type);
     }

@@ -80,6 +80,10 @@ public class Window {
         return getScene().getCamera();
     }
 
+    public static long getFrame() {
+        return frame;
+    }
+
     public long getGLFWWindow() {
         return this.glfwWindow;
     }

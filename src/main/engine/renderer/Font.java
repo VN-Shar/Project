@@ -39,7 +39,7 @@ public class Font {
 
             fontInfo = STBTTFontinfo.create();
             if (!stbtt_InitFont(fontInfo, ttf))
-                throw new IllegalStateException("Failed to initialize font information.");
+                throw new IllegalStateException("Failed to initialize font information, file path: <" + filePath + ">");
 
             try (MemoryStack fontStack = stackPush()) {
                 IntBuffer pAscent = fontStack.mallocInt(1);

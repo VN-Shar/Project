@@ -22,5 +22,4 @@ public class Observer<T> {
     public void removeListener(Consumer<T> callback) {
         callbacks.remove(callback);
     }
-
 }

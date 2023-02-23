@@ -1,7 +1,5 @@
 package engine.input;
 
-import java.util.Arrays;
-
 import org.joml.Vector2f;
 
 import engine.Camera;
@@ -14,7 +12,6 @@ public class InputListener {
 
     // Keyboard listener
     private static boolean keyPressed[] = new boolean[350];
-    private static boolean keyJustPressed[] = new boolean[350];
 
     // Mouse listener
     private static Vector2f scroll = new Vector2f();
@@ -23,18 +20,17 @@ public class InputListener {
     private static boolean isMouseButtonPressed;
 
     public static void endFrame() {
-        Arrays.fill(keyJustPressed, false);
-
         scroll.set(0, 0);
     }
 
     public static void keyCallback(long window, int key, int scancode, int action, int mods) {
+
         if (action == GLFW_PRESS) {
+            KeyBinding.onKeyCallback(key, true);
             keyPressed[key] = true;
-            keyJustPressed[key] = true;
         } else if (action == GLFW_RELEASE) {
+            KeyBinding.onKeyCallback(key, false);
             keyPressed[key] = false;
-            // keyJustPressed[key] = false;
         }
     }
 
@@ -75,10 +71,6 @@ public class InputListener {
 
     public static boolean isKeyPressed(int keyCode) {
         return keyPressed[keyCode];
-    }
-
-    public static boolean isKeyJustPressed(int keyCode) {
-        return keyJustPressed[keyCode];
     }
 
     public static boolean isDragging() {

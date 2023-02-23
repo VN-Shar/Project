@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import engine.Scene;
+import engine.event.Event;
 import engine.node._2D.Transform2D;
 
 public class Node {
@@ -22,6 +23,15 @@ public class Node {
 
     private Transform2D transform;
     private Scene tree;
+
+    public static class TreeEntered implements Event {
+
+        public final Scene tree;
+
+        public TreeEntered(Scene tree) {
+            this.tree = tree;
+        }
+    }
 
     public Node() {
 
@@ -66,7 +76,7 @@ public class Node {
 
     public void addChild(Node child) {
         child.parent = this;
-        child.tree = tree;
+        child.tree = getTree();
         children.add(child);
     }
 

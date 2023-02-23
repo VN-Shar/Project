@@ -15,9 +15,9 @@ public class Camera {
 
     private static final float MIN_ZOOM = 0.01f;
     private static final float MAX_ZOOM = 30f;
+    private static final Vector2f DEFAULT_SIZE = new Vector2f(1920, 1080);
 
     private WindowMode windowMode = WindowMode.REMAIN;
-    private final Vector2f DEFAULT_SIZE = new Vector2f(1920, 1080);
 
     private Vector2f position;
     private Vector2f size = new Vector2f();
@@ -65,6 +65,7 @@ public class Camera {
         this.viewMatrix = new Matrix4f();
         this.inverseProjection = new Matrix4f();
         this.inverseView = new Matrix4f();
+        setZoom(zoom);
         getProjection();
     }
 

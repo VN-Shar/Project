@@ -36,7 +36,7 @@ public class Texture {
             // Decode the image
             image = stbi_load(fileName, w, h, comp, 0);
             if (image == null) {
-                throw new RuntimeException("Failed to load image in path" + fileName + ": " + stbi_failure_reason());
+                throw new RuntimeException("Failed to load image in path <" + fileName + ">: " + stbi_failure_reason());
             }
 
             this.width = w.get(0);
