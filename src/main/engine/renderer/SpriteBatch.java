@@ -19,6 +19,7 @@ import engine.Window;
 import engine.node.UI.Color;
 import engine.node._2D.Sprite;
 import engine.node._2D.Transform2D;
+import engine.node._2D.FlagType.PositionType;
 
 public class SpriteBatch extends RenderBatch {
 
@@ -123,10 +124,13 @@ public class SpriteBatch extends RenderBatch {
         float sizeX = sprite.getTexture().getWidth() / cameraSize.x;
         float sizeY = sprite.getTexture().getHeight() / cameraSize.y * aspectRatio;
 
-        float offsetX = sizeX / 2;
-        float offsetY = sizeY / 2;
+        float offsetX = 0;
+        float offsetY = 0;
 
-        Vector4f currentPosition;
+        float drawX = 0;
+        float drawY = 0;
+
+        Vector4f currentPosition = new Vector4f();
 
         boolean isRotated = transform.getRotation() != 0.0f;
         Matrix4f transformMatrix = new Matrix4f().identity();
@@ -137,19 +141,44 @@ public class SpriteBatch extends RenderBatch {
             transformMatrix.scale(transform.getScale().x, transform.getScale().y, 1);
         }
 
+        PositionType positionType = sprite.getPositionType();
+
+        switch (positionType) {
+        case TOP_LEFT:
+            offsetX = 0;
+            offsetY = 0;
+            break;
+
+        case CENTER:
+            offsetX = sizeX / 2;
+            offsetY = sizeY / 2;
+            break;
+        }
+
         for (int i = 0; i < 4; i++) {
-            if (i == 1) {
-                offsetY = -sizeY / 2;
-            } else if (i == 2) {
-                offsetX = -sizeX / 2;
-            } else if (i == 3) {
-                offsetY = sizeY / 2;
+            switch (i) {
+            case 0:
+                drawX = sizeX - offsetX;
+                drawY = sizeY - offsetY;
+                break;
+            case 1:
+                drawX = sizeX - offsetX;
+                drawY = -offsetY;
+                break;
+            case 2:
+                drawX = -offsetX;
+                drawY = -offsetY;
+                break;
+            case 3:
+                drawX = -offsetX;
+                drawY = sizeY - offsetY;
+                break;
             }
 
-            currentPosition = new Vector4f(positionX + offsetX * transform.getScale().x, positionY + offsetY * transform.getScale().y, 0, 1);
+            currentPosition.set((positionX + drawX) * transform.getScale().x, (positionY + drawY) * transform.getScale().x, 0, 1);
 
             if (isRotated)
-                currentPosition = new Vector4f(offsetX, offsetY, 0, 1).mul(transformMatrix);
+                currentPosition.set(drawX, drawY - sizeY, 0, 1).mul(transformMatrix);
 
             loadVertexProperties(offset, currentPosition, color, texCoords[i], texId);
             offset += VERTEX_SIZE;
@@ -158,6 +187,7 @@ public class SpriteBatch extends RenderBatch {
 
     private void loadVertexProperties(int offset, Vector4f position, Color color, Vector2f texCoords, int texId) {
         // Load position
+
         vertices[offset] = position.x;
         vertices[offset + 1] = position.y;
 

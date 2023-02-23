@@ -2,7 +2,8 @@ package engine.node._2D;
 
 import engine.node.Node2D;
 import engine.node.UI.Color;
-import engine.node._2D.AlignmentType.Alignment;
+import engine.node._2D.FlagType.Alignment;
+import engine.node._2D.FlagType.PositionType;
 import engine.renderer.Font;
 
 public class Label extends Node2D {
@@ -82,5 +83,11 @@ public class Label extends Node2D {
 
     public Color getBackgroundColor() {
         return this.frame.getColor();
+    }
+
+    public void setPositionType(PositionType positionType) {
+        super.setPositionType(positionType);
+        frame.setPositionType(positionType);
+        text.setPositionType(positionType);
     }
 }

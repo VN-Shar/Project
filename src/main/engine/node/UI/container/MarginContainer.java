@@ -51,7 +51,8 @@ public class MarginContainer extends Container {
 
     public void resize() {
         for (Node c : getChildren()) {
-            if (c instanceof Node2D)
+            // Skip node that is not inherit from Node2D
+            if (!(c instanceof Node2D))
                 continue;
 
             // Node2D child = (Node2D) c;

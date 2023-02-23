@@ -9,6 +9,7 @@ import engine.input.InputListener;
 import engine.node.UI.Color;
 import engine.node._2D.Label;
 import engine.node._2D.Sprite;
+import engine.node._2D.FlagType.PositionType;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -29,6 +30,7 @@ public class EditorScene extends Scene {
         label.getTransform().setSize(new Vector2f(500, 70));
         label.setBackgroundColor(new Color(0.1f, 0.1f, 0.1f, 0.8f));
         label.setTextColor(new Color(1, 1, 1, 1));
+        label.setPositionType(PositionType.TOP_LEFT);
 
         queueAddObject(label);
     }
@@ -54,6 +56,8 @@ public class EditorScene extends Scene {
         Camera camera = Window.getScene().getCamera();
 
         float zoom = -InputListener.getMouseScroll().y / 10;
+
+        label.getTransform().addRotation(0.1f);
 
         camera.setPosition(camera.getPosition().sub(InputListener.getMouseRelative().mul(camera.getZoom())));
 

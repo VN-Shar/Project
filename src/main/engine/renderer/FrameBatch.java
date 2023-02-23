@@ -18,6 +18,7 @@ import engine.Window;
 import engine.node.UI.Color;
 import engine.node._2D.Frame;
 import engine.node._2D.Transform2D;
+import engine.node._2D.FlagType.PositionType;
 
 public class FrameBatch extends RenderBatch {
 
@@ -109,8 +110,11 @@ public class FrameBatch extends RenderBatch {
         float sizeX = transform.getSize().x / cameraSize.x;
         float sizeY = transform.getSize().y / cameraSize.y * aspectRatio;
 
-        float offsetX = sizeX / 2;
-        float offsetY = sizeY / 2;
+        float offsetX = 0;
+        float offsetY = 0;
+
+        float drawX = 0;
+        float drawY = 0;
 
         Vector4f currentPosition;
 
@@ -123,19 +127,43 @@ public class FrameBatch extends RenderBatch {
             transformMatrix.scale(transform.getScale().x, transform.getScale().y, 1);
         }
 
+        PositionType positionType = frame.getPositionType();
+
+        switch (positionType) {
+        case TOP_LEFT:
+            offsetX = 0;
+            offsetY = 0;
+            break;
+        case CENTER:
+            offsetX = sizeX / 2;
+            offsetY = sizeY / 2;
+            break;
+        }
+
         for (int i = 0; i < 4; i++) {
-            if (i == 1) {
-                offsetY = -sizeY / 2;
-            } else if (i == 2) {
-                offsetX = -sizeX / 2;
-            } else if (i == 3) {
-                offsetY = sizeY / 2;
+            switch (i) {
+            case 0:
+                drawX = sizeX - offsetX;
+                drawY = sizeY - offsetY;
+                break;
+            case 1:
+                drawX = sizeX - offsetX;
+                drawY = -offsetY;
+                break;
+            case 2:
+                drawX = -offsetX;
+                drawY = -offsetY;
+                break;
+            case 3:
+                drawX = -offsetX;
+                drawY = sizeY - offsetY;
+                break;
             }
 
-            currentPosition = new Vector4f(positionX + offsetX * transform.getScale().x, positionY + offsetY * transform.getScale().x, 0, 1);
+            currentPosition = new Vector4f((positionX + drawX) * transform.getScale().x, (positionY + drawY) * transform.getScale().x, 0, 1);
 
             if (isRotated)
-                currentPosition = new Vector4f(offsetX, offsetY, 0, 1).mul(transformMatrix);
+                currentPosition = new Vector4f(drawX, drawY, 0, 1).mul(transformMatrix);
 
             loadVertexProperties(offset, currentPosition, color);
             offset += VERTEX_SIZE;

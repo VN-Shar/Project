@@ -1,6 +1,6 @@
 package engine.node._2D;
 
-public final class AlignmentType {
+public final class FlagType {
 
     public static enum Alignment {
         BEGIN, CENTER, END;
@@ -16,5 +16,9 @@ public final class AlignmentType {
 
     public static enum SizeFlag {
         ORIGIN, CONTAINER
+    }
+
+    public static enum PositionType {
+        TOP_LEFT, CENTER
     }
 }

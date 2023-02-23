@@ -4,8 +4,9 @@ import org.joml.Vector2f;
 
 import engine.node.UI.Color;
 import engine.node.UI.container.Container;
-import engine.node._2D.AlignmentType.PositionFlag;
-import engine.node._2D.AlignmentType.SizeFlag;
+import engine.node._2D.FlagType.PositionFlag;
+import engine.node._2D.FlagType.PositionType;
+import engine.node._2D.FlagType.SizeFlag;
 
 public class Node2D extends Node {
 
@@ -15,6 +16,7 @@ public class Node2D extends Node {
 
     private PositionFlag positionFlag = PositionFlag.CONTAINER;
     private SizeFlag sizeFlag = SizeFlag.CONTAINER;
+    private PositionType positionType = PositionType.TOP_LEFT;
 
     public static Vector2f[] texCoords = { new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector2f(0, 1) };
 
@@ -66,6 +68,14 @@ public class Node2D extends Node {
 
     public SizeFlag getSizeFlag() {
         return this.sizeFlag;
+    }
+
+    public void setPositionType(PositionType positionType) {
+        this.positionType = positionType;
+    }
+
+    public PositionType getPositionType() {
+        return positionType;
     }
 
     private void flagUpdated() {

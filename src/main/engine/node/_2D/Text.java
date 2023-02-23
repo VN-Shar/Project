@@ -1,7 +1,7 @@
 package engine.node._2D;
 
 import engine.node.Node2D;
-import engine.node._2D.AlignmentType.Alignment;
+import engine.node._2D.FlagType.Alignment;
 import engine.renderer.AssetPool;
 import engine.renderer.Font;
 import engine.renderer.VisualServer;

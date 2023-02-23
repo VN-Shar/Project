@@ -1,10 +1,10 @@
 package engine.node._2D;
 
 import engine.node.Node2D;
+import engine.node._2D.FlagType.PositionType;
 import engine.renderer.AssetPool;
 import engine.renderer.Texture;
 import engine.renderer.VisualServer;
-
 
 public class Sprite extends Node2D {
 
@@ -12,6 +12,7 @@ public class Sprite extends Node2D {
 
     public Sprite(String fileName) {
         this.texture = AssetPool.getTexture(fileName);
+        setPositionType(PositionType.CENTER);
         VisualServer.draw(this);
     }
 

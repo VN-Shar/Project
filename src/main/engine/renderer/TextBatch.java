@@ -9,6 +9,7 @@ import engine.Window;
 import engine.node.UI.Color;
 import engine.node._2D.Text;
 import engine.node._2D.Transform2D;
+import engine.node._2D.FlagType.PositionType;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -229,41 +230,55 @@ public class TextBatch extends RenderBatch {
             float positionX = (transform.getPosition().x - cameraPosition.x) / cameraSize.x;
             float positionY = (transform.getPosition().y - cameraPosition.y) / cameraSize.y * aspectRatio;
 
-            float sizeX = transform.getSize().x / 2;
-            float sizeY = transform.getSize().y / 2;
+            float sizeX = transform.getSize().x;
+            float sizeY = transform.getSize().y * aspectRatio;
 
             Vector4f currentPosition;
 
             boolean isRotated = transform.getRotation() != 0.0f;
             Matrix4f transformMatrix = new Matrix4f().identity();
 
-            float offsetX = 0, offsetY = 0;
+            float offsetX = 0;
+            float offsetY = 0;
+
+            PositionType positionType = text.getPositionType();
+
+            switch (positionType) {
+            case TOP_LEFT:
+                offsetX = 0;
+                offsetY = 0;
+                break;
+            case CENTER:
+                offsetX = sizeX / 2;
+                offsetY = sizeY / 2;
+                break;
+            }
 
             switch (text.verticalAlignment) {
             case BEGIN:
-                offsetX = 0;
+                offsetX += 0;
                 break;
 
             case CENTER:
-                offsetX = (transform.getSize().x - textSizeX) / 2;
+                offsetX += (transform.getSize().x - textSizeX) / 2;
                 break;
 
             case END:
-                offsetX = (transform.getSize().x - textSizeX);
+                offsetX += (transform.getSize().x - textSizeX);
                 break;
             }
 
             switch (text.horizontalAlignment) {
             case BEGIN:
-                offsetY = 0;
+                offsetY += 0;
                 break;
 
             case CENTER:
-                offsetY = (transform.getSize().y - textSizeY) / 2;
+                offsetY += (transform.getSize().y - textSizeY) / 2;
                 break;
 
             case END:
-                offsetY = (transform.getSize().y - textSizeY);
+                offsetY += (transform.getSize().y - textSizeY);
                 break;
             }
 
@@ -277,12 +292,12 @@ public class TextBatch extends RenderBatch {
 
                 if (isRotated)
                     currentPosition = new Vector4f(//
-                            (positions.get(i).x + offsetX - sizeX) / cameraSize.x, //
-                            (positions.get(i).y + offsetY - sizeY) / cameraSize.y * aspectRatio, 0, 1).mul(transformMatrix);
+                            (positions.get(i).x + offsetX) / cameraSize.x, //
+                            (positions.get(i).y + offsetY) / cameraSize.y, 0, 1).mul(transformMatrix);
                 else
                     currentPosition = new Vector4f(//
-                            positionX + (positions.get(i).x + offsetX - sizeX) / cameraSize.x * transform.getScale().x,
-                            positionY + (positions.get(i).y + offsetY - sizeY) / cameraSize.y * aspectRatio * transform.getScale().y, 0, 1);
+                            positionX + (positions.get(i).x + offsetX) / cameraSize.x * transform.getScale().x,
+                            positionY + (positions.get(i).y + offsetY) / cameraSize.y * transform.getScale().y, 0, 1);
 
                 loadVertexProperties(offset, currentPosition, color, texCoords.get(i), fontId);
                 offset += VERTEX_SIZE;
