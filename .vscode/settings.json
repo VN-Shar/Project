@@ -3,6 +3,8 @@
   "java.compile.nullAnalysis.mode": "disabled",
   "cSpell.words": [
     "Codepoint",
+    "lerp",
+    "REBECCA",
     "stbtt"
   ],
   "java.debug.settings.onBuildFailureProceed": true,

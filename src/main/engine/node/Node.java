@@ -56,6 +56,10 @@ public class Node {
         children.add(child);
     }
 
+    public List<Node> getChildren() {
+        return children;
+    }
+
     public Node getNode(String nodeName) {
         for (Node node : children)
             if (node.name.equals(nodeName))

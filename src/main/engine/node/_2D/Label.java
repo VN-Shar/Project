@@ -2,8 +2,7 @@ package engine.node._2D;
 
 import engine.node.Node2D;
 import engine.node.UI.Color;
-import engine.node._2D.Alignment.HorizontalAlignment;
-import engine.node._2D.Alignment.VerticalAlignment;
+import engine.node._2D.AlignmentType.Alignment;
 import engine.renderer.Font;
 
 public class Label extends Node2D {
@@ -11,8 +10,8 @@ public class Label extends Node2D {
     private Text text;
     private Frame frame;
 
-    public VerticalAlignment verticalAlignment = VerticalAlignment.BEGIN;
-    public HorizontalAlignment horizontalAlignment = HorizontalAlignment.BEGIN;
+    public Alignment verticalAlignment = Alignment.BEGIN;
+    public Alignment horizontalAlignment = Alignment.BEGIN;
 
     public Label() {
         init(new Transform2D());

@@ -1,8 +1,7 @@
 package engine.node._2D;
 
 import engine.node.Node2D;
-import engine.node._2D.Alignment.HorizontalAlignment;
-import engine.node._2D.Alignment.VerticalAlignment;
+import engine.node._2D.AlignmentType.Alignment;
 import engine.renderer.AssetPool;
 import engine.renderer.Font;
 import engine.renderer.VisualServer;
@@ -18,8 +17,8 @@ public class Text extends Node2D {
     public boolean isKerning = false;
     public boolean autoWarp = true;
 
-    public VerticalAlignment verticalAlignment = VerticalAlignment.CENTER;
-    public HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTER;
+    public Alignment verticalAlignment = Alignment.CENTER;
+    public Alignment horizontalAlignment = Alignment.CENTER;
 
     public Text() {
         init(AssetPool.getFont(defaultFontPath), new String());

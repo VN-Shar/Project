@@ -1,18 +1,9 @@
 package project;
 
-import engine.Window;
+import engine.Engine;
 
 public class Main {
-
 	public static void main(String[] args) {
-		Window window = Window.get();
-		window.run();
+		new Engine();
 	}
-
-	public static void printStackTrace() {
-		for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-			System.out.println(ste);
-		}
-	}
-
 }
