@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL;
 import engine.editor.scenes.EditorScene;
 import engine.event.EventHandler;
 import engine.event.EventType;
-import engine.event.EventType.WindowResized;
 import engine.input.InputListener;
 import engine.renderer.VisualServer;
 
@@ -230,8 +229,6 @@ public class Window {
         setWidth(local_width);
         glViewport(0, 0, local_width, local_height);
         Window.scene.getCamera().setSize(new Vector2f(local_width, local_height));
-
-        EventHandler.invoke(new WindowResized(new Vector2f(getWidth(), getHeight())));
     }
 
     private void update(float delta) {

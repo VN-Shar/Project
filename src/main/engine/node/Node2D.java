@@ -11,7 +11,6 @@ public class Node2D extends Node {
 
     private boolean isDirty = true;
     private boolean isShow = true;
-    private int zIndex = 0;
     private Color color = new Color(1, 1, 1, 1);
 
     private PositionFlag positionFlag = PositionFlag.CONTAINER;
@@ -41,14 +40,6 @@ public class Node2D extends Node {
 
     public boolean isShowing() {
         return this.isShow;
-    }
-
-    public void setZIndex(int zIndex) {
-        this.zIndex = zIndex;
-    }
-
-    public int getZIndex() {
-        return this.zIndex;
     }
 
     public void setColor(Color color) {

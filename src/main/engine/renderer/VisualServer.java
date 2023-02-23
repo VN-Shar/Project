@@ -14,7 +14,7 @@ public class VisualServer {
     private static final Comparator<RenderBatch> batchComparator = new Comparator<RenderBatch>() {
 
         public int compare(RenderBatch o1, RenderBatch o2) {
-            return o1.getZIndex() - o2.getZIndex();
+            return o1.getGlobalZIndex() - o2.getGlobalZIndex();
         };
     };
 
@@ -30,19 +30,19 @@ public class VisualServer {
     public static void draw(Sprite sprite) {
         for (RenderBatch batch : batches) {
             if (batch instanceof SpriteBatch) {
-                if (batch.getZIndex() == sprite.getZIndex()) {
+                if (batch.getGlobalZIndex() == sprite.getGlobalZIndex()) {
                     if (batch.hasRoom()) {
                         batch.draw(sprite);
                         return;
                     }
                 }
 
-                if (batch.getZIndex() > sprite.getZIndex()) {
+                if (batch.getGlobalZIndex() > sprite.getGlobalZIndex()) {
                     break;
                 }
             }
         }
-        SpriteBatch batch = new SpriteBatch(sprite.getZIndex(), MAX_BATCH_SIZE);
+        SpriteBatch batch = new SpriteBatch(sprite.getGlobalZIndex(), MAX_BATCH_SIZE);
         batches.add(batch);
         batch.draw(sprite);
         batches.sort(batchComparator);
@@ -54,19 +54,19 @@ public class VisualServer {
 
             if (batch instanceof FrameBatch) {
 
-                if (batch.getZIndex() == frame.getZIndex()) {
+                if (batch.getGlobalZIndex() == frame.getGlobalZIndex()) {
                     if (batch.hasRoom()) {
                         batch.draw(frame);
                         return;
                     }
                 }
 
-                if (batch.getZIndex() > frame.getZIndex()) {
+                if (batch.getGlobalZIndex() > frame.getGlobalZIndex()) {
                     break;
                 }
             }
         }
-        FrameBatch batch = new FrameBatch(frame.getZIndex(), MAX_BATCH_SIZE);
+        FrameBatch batch = new FrameBatch(frame.getGlobalZIndex(), MAX_BATCH_SIZE);
         batches.add(batch);
         batch.draw(frame);
         batches.sort(batchComparator);
@@ -77,19 +77,19 @@ public class VisualServer {
 
             if (batch instanceof TextBatch) {
 
-                if (batch.getZIndex() == text.getZIndex()) {
+                if (batch.getGlobalZIndex() == text.getGlobalZIndex()) {
                     if (batch.hasRoom()) {
                         batch.draw(text);
                         return;
                     }
                 }
 
-                if (batch.getZIndex() > text.getZIndex()) {
+                if (batch.getGlobalZIndex() > text.getGlobalZIndex()) {
                     break;
                 }
             }
         }
-        TextBatch batch = new TextBatch(text.getZIndex(), MAX_BATCH_SIZE);
+        TextBatch batch = new TextBatch(text.getGlobalZIndex(), MAX_BATCH_SIZE);
         batches.add(batch);
         batch.draw(text);
         batches.sort(batchComparator);

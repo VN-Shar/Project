@@ -4,6 +4,10 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import engine.event.EventHandler;
+import engine.event.EventType.CameraSizeChanged;
+import engine.event.EventType.CameraPositionChanged;
+
 public class Camera {
 
     public enum WindowMode {
@@ -35,7 +39,7 @@ public class Camera {
         this.viewMatrix = new Matrix4f();
         this.inverseProjection = new Matrix4f();
         this.inverseView = new Matrix4f();
-        calculateProjection();
+        getProjection();
     }
 
     public void setSize(Vector2f size) {
@@ -57,7 +61,9 @@ public class Camera {
             break;
         }
         this.aspectRatio = size.y / size.x;
-        calculateProjection();
+        getProjection();
+
+        EventHandler.invoke(new CameraSizeChanged(size));
     }
 
     public Vector2f getSize() {
@@ -70,9 +76,10 @@ public class Camera {
 
     public void setPosition(Vector2f position) {
         this.position = position;
+        EventHandler.invoke(new CameraPositionChanged(position));
     }
 
-    public void calculateProjection() {
+    public void getProjection() {
         projectionMatrix.identity();
         projectionMatrix.ortho(//
                 -zoom * windowZoom / 2, //
@@ -111,14 +118,14 @@ public class Camera {
         // Zoom can not be <= 0
         if (zoom >= MIN_ZOOM && zoom <= MAX_ZOOM) {
             this.zoom = zoom;
-            calculateProjection();
+            getProjection();
         }
     }
 
     public void addZoom(float value) {
         if (zoom + value >= MIN_ZOOM && zoom + value <= MAX_ZOOM) {
             this.zoom += value;
-            calculateProjection();
+            getProjection();
         }
     }
 

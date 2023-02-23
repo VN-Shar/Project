@@ -79,7 +79,7 @@ public abstract class RenderBatch {
 
     protected abstract int[] generateIndices();
 
-    public int getZIndex() {
+    public int getGlobalZIndex() {
         return zIndex;
     }
 }

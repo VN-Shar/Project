@@ -17,6 +17,7 @@ public class Node {
     private Node parent;
     private List<Node> children;
     private boolean isAlive = true;
+    private int zIndex = 0;
 
     private Transform2D transform;
 
@@ -110,6 +111,20 @@ public class Node {
 
     public void setAlive(boolean value) {
         this.isAlive = value;
+    }
+
+    public void setZIndex(int zIndex) {
+        this.zIndex = zIndex;
+    }
+
+    public int getZIndex() {
+        return this.zIndex;
+    }
+
+    public int getGlobalZIndex() {
+        if (getParent() == null)
+            return getZIndex();
+        return getZIndex() + getParent().getGlobalZIndex();
     }
 
     // Overide

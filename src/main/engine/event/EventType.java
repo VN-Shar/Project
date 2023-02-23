@@ -18,12 +18,21 @@ public enum EventType implements Event {
         }
     }
 
-    public static class WindowResized implements Event {
+    public static class CameraSizeChanged implements Event {
 
         public final Vector2f size;
 
-        public WindowResized(Vector2f size) {
+        public CameraSizeChanged(Vector2f size) {
             this.size = size;
+        }
+    }
+
+    public static class CameraPositionChanged implements Event {
+
+        public final Vector2f position;
+
+        public CameraPositionChanged(Vector2f position) {
+            this.position = position;
         }
     }
 }
