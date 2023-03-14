@@ -322,6 +322,13 @@ public class Color {
         this.b = c.b;
     }
 
+    public Color(Colors c, int a) {
+        this.a = a;
+        this.r = c.r;
+        this.g = c.g;
+        this.b = c.b;
+    }
+
     public Color lerp(Color target, float value) {
         return new Color(//
                 r + (target.r - r) * value, //

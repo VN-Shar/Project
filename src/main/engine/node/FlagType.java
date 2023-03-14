@@ -1,4 +1,4 @@
-package engine.node._2D;
+package engine.node;
 
 public final class FlagType {
 
@@ -15,7 +15,7 @@ public final class FlagType {
     }
 
     public static enum SizeFlag {
-        ORIGIN, CONTAINER
+        ORIGIN, EXPAND
     }
 
     public static enum PositionType {

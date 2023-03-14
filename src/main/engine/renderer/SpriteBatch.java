@@ -16,10 +16,10 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import engine.Window;
+import engine.node.Transform2D;
+import engine.node.FlagType.PositionType;
 import engine.node.UI.Color;
 import engine.node._2D.Sprite;
-import engine.node._2D.Transform2D;
-import engine.node._2D.FlagType.PositionType;
 
 public class SpriteBatch extends RenderBatch {
 
@@ -59,6 +59,7 @@ public class SpriteBatch extends RenderBatch {
                 if (sprite.isDirty()) {
                     loadVertexProperties(sprite, spriteIndex);
                     spriteIndex += 1;
+                    sprite.clean();
                 }
             }
         }
@@ -112,17 +113,15 @@ public class SpriteBatch extends RenderBatch {
         int texId = textures.indexOf(sprite.getTexture());
 
         // Add vertices with the appropriate properties
-        Vector2f cameraSize = Window.getScene().getCamera().getSize();
-        Vector2f cameraPosition = Window.getScene().getCamera().getPosition();
         float aspectRatio = Window.getScene().getCamera().getAspectRatio();
 
         Transform2D transform = sprite.getGlobalTransform();
 
-        float positionX = (transform.getPosition().x - cameraPosition.x) / cameraSize.x;
-        float positionY = (transform.getPosition().y - cameraPosition.y) / cameraSize.y * aspectRatio;
+        float positionX = transform.getPosition().x;
+        float positionY = transform.getPosition().y * aspectRatio;
 
-        float sizeX = sprite.getTexture().getWidth() / cameraSize.x;
-        float sizeY = sprite.getTexture().getHeight() / cameraSize.y * aspectRatio;
+        float sizeX = sprite.getTexture().getWidth();
+        float sizeY = sprite.getTexture().getHeight() * aspectRatio;
 
         float offsetX = 0;
         float offsetY = 0;
@@ -175,7 +174,7 @@ public class SpriteBatch extends RenderBatch {
                 break;
             }
 
-            currentPosition.set((positionX + drawX) * transform.getScale().x, (positionY + drawY) * transform.getScale().x, 0, 1);
+            currentPosition.set(positionX + drawX * transform.getScale().x, positionY + drawY * transform.getScale().y, 0, 1);
 
             if (isRotated)
                 currentPosition.set(drawX, drawY - sizeY, 0, 1).mul(transformMatrix);

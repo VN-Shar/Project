@@ -1,18 +1,19 @@
 package engine.node._2D;
 
 import engine.node.Node2D;
-import engine.node._2D.FlagType.Alignment;
+import engine.node.Transform2D;
+import engine.node.FlagType.Alignment;
 import engine.renderer.AssetPool;
 import engine.renderer.Font;
 import engine.renderer.VisualServer;
 
 public class Text extends Node2D {
 
+    private static String defaultFontPath = "D:/Java/Project/assets/fonts/NotoSans-Black.ttf";
+
     private Font font;
 
     private String content = new String();
-
-    private String defaultFontPath = "D:/Java/Project/assets/fonts/NotoSans-Black.ttf";
 
     public boolean isKerning = false;
     public boolean autoWarp = true;
@@ -21,41 +22,50 @@ public class Text extends Node2D {
     public Alignment horizontalAlignment = Alignment.CENTER;
 
     public Text() {
-        init(AssetPool.getFont(defaultFontPath), new String());
+        this(AssetPool.getFont(defaultFontPath), new String(), new Transform2D());
+    }
+
+    Text(Transform2D transform) {
+        this(AssetPool.getFont(defaultFontPath), new String(), transform);
     }
 
     public Text(String content) {
-        init(AssetPool.getFont(defaultFontPath), content);
+        this(AssetPool.getFont(defaultFontPath), content, new Transform2D());
     }
 
     public Text(Font font) {
-        init(font, new String());
+        this(font, new String(), new Transform2D());
     }
 
-    public Text(Font font, String content) {
-        init(font, content);
-    }
-
-    private void init(Font font, String content) {
+    public Text(Font font, String content, Transform2D transform) {
+        this.setTransform(transform);
         this.font = font;
         this.content = content;
         VisualServer.draw(this);
     }
 
     public void setFont(Font font) {
+        if (this.font.equals(font))
+            return;
+
         this.font = font;
+        dirty();
     }
 
     public Font getFont() {
-        return this.font;
+        return font;
     }
 
     public void setText(String content) {
+        if (this.content.equals(content))
+            return;
+
         this.content = content;
+        dirty();
     }
 
     public String getText() {
-        return this.content;
+        return content;
     }
 
 }

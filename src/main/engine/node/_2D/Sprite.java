@@ -1,7 +1,7 @@
 package engine.node._2D;
 
 import engine.node.Node2D;
-import engine.node._2D.FlagType.PositionType;
+import engine.node.FlagType.PositionType;
 import engine.renderer.AssetPool;
 import engine.renderer.Texture;
 import engine.renderer.VisualServer;
@@ -22,7 +22,7 @@ public class Sprite extends Node2D {
 
     public void setTexture(Texture texture) {
         this.texture = texture;
-        setDirty();
+        dirty();
     }
 
     @Override

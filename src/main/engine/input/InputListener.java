@@ -4,6 +4,7 @@ import org.joml.Vector2f;
 
 import engine.Camera;
 import engine.Window;
+import engine.event.Signal;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -19,6 +20,8 @@ public class InputListener {
     private static boolean mouseButtonPressed[] = new boolean[9];
     private static boolean isMouseButtonPressed;
 
+    public static Signal<Integer> onKeyPressed = new Signal<>();
+
     public static void endFrame() {
         scroll.set(0, 0);
     }
@@ -28,9 +31,15 @@ public class InputListener {
         if (action == GLFW_PRESS) {
             KeyBinding.onKeyCallback(key, true);
             keyPressed[key] = true;
+
+            onKeyPressed.emit(key);
+
         } else if (action == GLFW_RELEASE) {
             KeyBinding.onKeyCallback(key, false);
             keyPressed[key] = false;
+        } else {
+
+            // Key hold
         }
     }
 
@@ -84,14 +93,15 @@ public class InputListener {
     public static Vector2f getGlobalMousePosition() {
         Camera camera = Window.getScene().getCamera();
 
-        return new Vector2f(camera.getPosition().add(getScreenMousePosition().add(camera.getSize().div(-2)).mul(camera.getZoom())));
+        return new Vector2f(
+                camera.getPosition().add(getScreenMousePosition().add(camera.getSize().div(-2)).mul(camera.getZoom())));
     }
 
     public static Vector2f getMouseRelative() {
         if (isDragging()) {
             return new Vector2f(relative);
         }
-        return relative.set(0, 0);
+        return new Vector2f();
     }
 
     public static Vector2f getMouseScroll() {

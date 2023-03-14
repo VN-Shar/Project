@@ -50,9 +50,6 @@ public class KeyBinding {
             if (state.isPressed != isPressed)
                 state.frame = Window.getFrame();
             state.isPressed = isPressed;
-
-            System.out.println(bindName + " " + state.isPressed + " " + state.frame);
-
         }
     }
 

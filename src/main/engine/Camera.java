@@ -4,8 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import engine.event.Event;
-import engine.event.EventHandler;
+import engine.event.Signal;
+import engine.node.Transform2D;
 
 public class Camera {
 
@@ -13,114 +13,95 @@ public class Camera {
         REMAIN, STRETCH, SCALE;
     }
 
-    private static final float MIN_ZOOM = 0.01f;
+    private static final float MIN_ZOOM = 0.001f;
     private static final float MAX_ZOOM = 30f;
     private static final Vector2f DEFAULT_SIZE = new Vector2f(1920, 1080);
 
-    private WindowMode windowMode = WindowMode.REMAIN;
+    private WindowMode windowMode = WindowMode.SCALE;
 
-    private Vector2f position;
-    private Vector2f size = new Vector2f();
+    private Transform2D transform = new Transform2D();
 
-    private Matrix4f projectionMatrix, viewMatrix, inverseProjection, inverseView;
+    private Matrix4f projectionMatrix, viewMatrix;
     private float aspectRatio;
 
+    private Vector3f cameraOrigin = new Vector3f();
     private Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
     private Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
-    private float zoom = 2f;
-    private float windowZoom = 1f;
+    private Vector2f windowScale = new Vector2f(1, 1);
 
-    public static class CameraSizeChanged implements Event {
-
-        public final Vector2f size;
-
-        public CameraSizeChanged(Vector2f size) {
-            this.size = size;
-        }
-    }
-
-    public static class CameraPositionChanged implements Event {
-
-        public final Vector2f position;
-
-        public CameraPositionChanged(Vector2f position) {
-            this.position = position;
-        }
-    }
-
-    public static class CameraZoomChanged implements Event {
-
-        public final float zoom;
-
-        public CameraZoomChanged(Float zoom) {
-            this.zoom = zoom;
-        }
-    }
+    public Signal<Transform2D> onCameraTransformChanged = new Signal<Transform2D>();
 
     public Camera(Vector2f position, Vector2f size) {
-        this.position = position;
-        this.size = size;
+        this.transform.setPosition(position);
+        this.transform.setSize(size);
+
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
-        this.inverseProjection = new Matrix4f();
-        this.inverseView = new Matrix4f();
-        setZoom(zoom);
-        getProjection();
+
+        transform.onTransformChanged.connect((trans) -> onCameraTransformChanged.emit(trans));
+        calculateProjectionMatrix();
     }
 
     public void setSize(Vector2f size) {
-        this.windowZoom = 1f;
+        windowScale.set(1, 1);
         switch (windowMode) {
-        case REMAIN:
-            this.size = size;
-            break;
+            case REMAIN:
+                transform.setSize(size);
+                break;
 
-        case STRETCH:
-            this.size = DEFAULT_SIZE;
-            break;
+            case STRETCH:
+                transform.setSize(DEFAULT_SIZE);
+                break;
 
-        case SCALE:
-            float x = DEFAULT_SIZE.x / size.x;
-            float y = DEFAULT_SIZE.y / size.y;
-            this.size = size;
-            this.windowZoom = x > y ? x : y;
-            break;
+            case SCALE:
+                float x = DEFAULT_SIZE.x / size.x;
+                float y = DEFAULT_SIZE.y / size.y;
+
+                transform.setSize(size);
+                windowScale.set(Math.max(x, y));
+                break;
         }
         this.aspectRatio = size.y / size.x;
-        getProjection();
-
-        EventHandler.invoke(new CameraSizeChanged(size));
+        calculateProjectionMatrix();
+        onCameraTransformChanged.emit(transform);
     }
 
     public Vector2f getSize() {
-        return new Vector2f(size);
+        return new Vector2f(transform.getSize());
     }
 
     public Vector2f getPosition() {
-        return new Vector2f(position);
+        return new Vector2f(transform.getPosition());
+    }
+
+    public Transform2D getTransform() {
+        return transform;
     }
 
     public void setPosition(Vector2f position) {
-        this.position = position;
-        EventHandler.invoke(new CameraPositionChanged(position));
+        if (!transform.getPosition().equals(position)) {
+            transform.setPosition(position);
+        }
     }
 
-    public void getProjection() {
+    public void calculateProjectionMatrix() {
         projectionMatrix.identity();
         projectionMatrix.ortho(//
-                -zoom * windowZoom / 2, //
-                zoom * windowZoom / 2, //
-                zoom * windowZoom * aspectRatio / 2, //
-                -zoom * windowZoom * aspectRatio / 2, //
-                0.0f, 100.0f);
-        inverseProjection = new Matrix4f(projectionMatrix).invert();
+                transform.getScale().x * windowScale.x * transform.getSize().x / -2, //
+                transform.getScale().x * windowScale.x * transform.getSize().x / 2, //
+                transform.getScale().y * windowScale.y * aspectRatio * transform.getSize().y / 2, //
+                transform.getScale().y * windowScale.y * aspectRatio * transform.getSize().y / -2, //
+                0, 100.0f);
     }
 
     public Matrix4f getViewMatrix() {
         viewMatrix.identity();
-        viewMatrix.lookAt(new Vector3f(0, 0, 0.0f), cameraFront.add(0, 0, 0.0f), cameraUp);
-        inverseView = new Matrix4f(this.viewMatrix).invert();
+
+        viewMatrix.lookAt(//
+                cameraOrigin.set(transform.getPosition(), 0f), //
+                cameraFront.set(transform.getPosition(), -100), //
+                cameraUp);
 
         return this.viewMatrix;
     }
@@ -129,32 +110,25 @@ public class Camera {
         return this.projectionMatrix;
     }
 
-    public Matrix4f getInverseProjection() {
-        return this.inverseProjection;
-    }
-
-    public Matrix4f getInverseView() {
-        return this.inverseView;
-    }
-
-    public float getZoom() {
-        return zoom;
+    public Vector2f getZoom() {
+        return new Vector2f(transform.getScale());
     }
 
     public void setZoom(float zoom) {
-        // Zoom can not be <= 0
+        // Zoom can not less than 0 and more than MAX
         if (zoom >= MIN_ZOOM && zoom <= MAX_ZOOM) {
-            this.zoom = zoom;
-            getProjection();
-            EventHandler.invoke(new CameraZoomChanged(zoom));
+            transform.setScale(zoom);
+            calculateProjectionMatrix();
         }
     }
 
     public void addZoom(float value) {
-        if (zoom + value >= MIN_ZOOM && zoom + value <= MAX_ZOOM) {
-            this.zoom += value;
-            getProjection();
-            EventHandler.invoke(new CameraZoomChanged(zoom));
+        if (transform.getScale().x + value >= MIN_ZOOM //
+                && transform.getScale().x + value <= MAX_ZOOM//
+                && transform.getScale().y + value >= MIN_ZOOM//
+                && transform.getScale().y + value <= MAX_ZOOM) {
+            this.transform.addScale(value);
+            calculateProjectionMatrix();
         }
     }
 

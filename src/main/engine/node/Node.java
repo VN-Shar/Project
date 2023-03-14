@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import engine.Scene;
-import engine.event.Event;
-import engine.node._2D.Transform2D;
+import engine.event.Signal;
+import engine.util.Log;
 
 public class Node {
 
@@ -24,14 +24,8 @@ public class Node {
     private Transform2D transform;
     private Scene tree;
 
-    public static class TreeEntered implements Event {
-
-        public final Scene tree;
-
-        public TreeEntered(Scene tree) {
-            this.tree = tree;
-        }
-    }
+    public Signal<Scene> onTreeEntered = new Signal<>();
+    public Signal<Node> onParentAdded = new Signal<>();
 
     public Node() {
 
@@ -48,7 +42,7 @@ public class Node {
             object_map.put(name, 0);
         }
 
-        System.out.println(this.name);
+        Log.info(this.name);
 
         transform = new Transform2D();
         children = new ArrayList<Node>();
@@ -68,6 +62,8 @@ public class Node {
         this.tree = tree;
         for (Node child : getChildren())
             child.setTree(tree);
+
+        onTreeEntered.emit(tree);
     }
 
     public Scene getTree() {
@@ -75,13 +71,28 @@ public class Node {
     }
 
     public void addChild(Node child) {
-        child.parent = this;
-        child.tree = getTree();
+        if (child == null || child == this)
+            return;
+
+        if (child.parent != null)
+            child.parent.removeChild(child);
+
+        child.setParent(this);
         children.add(child);
+
+        if (tree == null)
+            return;
+
+        child.setTree(getTree());
+
     }
 
     public List<Node> getChildren() {
         return children;
+    }
+
+    public void removeChild(Node child) {
+        children.remove(child);
     }
 
     public Node getNode(String nodeName) {
@@ -91,8 +102,17 @@ public class Node {
         return null;
     }
 
+    public void setParent(Node parent) {
+        this.parent = parent;
+        onParentAdded.emit(parent);
+    }
+
     public Node getParent() {
         return this.parent;
+    }
+
+    public void setTransform(Transform2D transform) {
+        this.transform.copyFrom(transform);
     }
 
     public Transform2D getTransform() {
@@ -103,11 +123,7 @@ public class Node {
         if (this.parent == null)
             return transform.copy();
 
-        return transform.copy().translate(parent.getGlobalTransform());
-    }
-
-    public void setTransform(Transform2D transform) {
-        this.transform = transform;
+        return parent.getGlobalTransform().translate(transform);
     }
 
     public void update(float deltaTime) {
@@ -148,6 +164,11 @@ public class Node {
         if (getParent() == null)
             return getZIndex();
         return getZIndex() + getParent().getGlobalZIndex();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     // Overide

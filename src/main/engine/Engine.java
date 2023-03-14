@@ -3,6 +3,7 @@ package engine;
 import static org.lwjgl.glfw.GLFW.*;
 
 import engine.input.KeyBinding;
+import engine.util.Log;
 
 public class Engine {
 
@@ -22,8 +23,10 @@ public class Engine {
     }
 
     public static void printStackTrace() {
+        StringBuffer buffer = new StringBuffer();
         for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-            System.out.println(ste);
+            buffer.append(ste.toString() + "\n");
         }
+        Log.error(buffer.toString());
     }
 }

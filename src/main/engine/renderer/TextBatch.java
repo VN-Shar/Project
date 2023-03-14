@@ -6,10 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import engine.Window;
+import engine.node.Transform2D;
+import engine.node.FlagType.PositionType;
 import engine.node.UI.Color;
 import engine.node._2D.Text;
-import engine.node._2D.Transform2D;
-import engine.node._2D.FlagType.PositionType;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -52,9 +52,11 @@ public class TextBatch extends RenderBatch {
         Iterator<Text> iter = texts.iterator();
         Text text;
         int textIndex = 0;
+        int charCount = 0;
 
         while (iter.hasNext()) {
             text = iter.next();
+            charCount += text.getText().length();
 
             if (!text.isAlive())
                 iter.remove();
@@ -63,9 +65,11 @@ public class TextBatch extends RenderBatch {
                 if (text.isDirty()) {
                     loadVertexProperties(text, textIndex);
                     textIndex += text.getText().length();
+                    text.clean();
                 }
             }
         }
+
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -91,7 +95,7 @@ public class TextBatch extends RenderBatch {
         glEnableVertexAttribArray(1);
 
         // 6 vertices per texture
-        glDrawElements(GL_TRIANGLES, textIndex * 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, charCount * 6, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
         glDisableVertexAttribArray(0);
@@ -107,8 +111,8 @@ public class TextBatch extends RenderBatch {
     private void loadVertexProperties(Text text, int index) {
 
         Font font = text.getFont();
-
         String content = text.getText();
+
         float scale = stbtt_ScaleForPixelHeight(font.getFontInfo(), font.getFontHeight());
 
         try (MemoryStack stack = stackPush()) {
@@ -118,10 +122,10 @@ public class TextBatch extends RenderBatch {
 
             float width = 0;
             int i = 0;
-            int to = content.length() - 1;
+            int to = content.length();
             int lastSpaceIndex = 0;
 
-            StringBuilder string = new StringBuilder(content);
+            StringBuilder string = new StringBuilder(text.getText());
 
             while (i < to) {
                 if (text.getTransform().getSize().x == 1)
@@ -186,49 +190,42 @@ public class TextBatch extends RenderBatch {
                     xBuffer.put(0, 0.0f);
                     continue;
                 }
-                try {
 
-                    // Get font quad and texture coordinate
-                    stbtt_GetBakedQuad(font.getCharData(), font.getBitmapWidth(), font.getBitmapHeight(), charCode - 32, xBuffer, yBuffer, quad,
-                            true);
+                // Get font quad and texture coordinate
+                stbtt_GetBakedQuad(font.getCharData(), font.getBitmapWidth(), font.getBitmapHeight(), charCode - 32, xBuffer, yBuffer, quad, true);
 
-                    if (text.isKerning && i < to) {
-                        getCodePoint(content, to, i, codePointBuffer);
-                        xBuffer.put(0, xBuffer.get(0) + stbtt_GetCodepointKernAdvance(font.getFontInfo(), charCode, codePointBuffer.get(0)) * scale);
-                    }
-                    float x0 = quad.x0(), x1 = quad.x1(), y0 = quad.y0() + lineY + lineGap, y1 = quad.y1() + lineY + lineGap;
-
-                    if (x1 > transform.getSize().x || y1 > transform.getSize().y)
-                        continue;
-
-                    textSizeX = Math.max(x1, textSizeX);
-                    textSizeY = Math.max(y1, textSizeY);
-
-                    positions.add(new Vector2f(x0, y0));
-                    positions.add(new Vector2f(x1, y0));
-                    positions.add(new Vector2f(x1, y1));
-                    positions.add(new Vector2f(x0, y1));
-
-                    texCoords.add(new Vector2f(quad.s0(), quad.t0()));
-                    texCoords.add(new Vector2f(quad.s1(), quad.t0()));
-                    texCoords.add(new Vector2f(quad.s1(), quad.t1()));
-                    texCoords.add(new Vector2f(quad.s0(), quad.t1()));
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (text.isKerning && i < to) {
+                    getCodePoint(content, to, i, codePointBuffer);
+                    xBuffer.put(0, xBuffer.get(0) + stbtt_GetCodepointKernAdvance(font.getFontInfo(), charCode, codePointBuffer.get(0)) * scale);
                 }
+                float x0 = quad.x0(), x1 = quad.x1(), y0 = quad.y0() + lineY + lineGap, y1 = quad.y1() + lineY + lineGap;
+
+                if (x1 > transform.getSize().x || y1 > transform.getSize().y)
+                    continue;
+
+                textSizeX = Math.max(x1, textSizeX);
+                textSizeY = Math.max(y1, textSizeY);
+
+                positions.add(new Vector2f(x0, y0));
+                positions.add(new Vector2f(x1, y0));
+                positions.add(new Vector2f(x1, y1));
+                positions.add(new Vector2f(x0, y1));
+
+                texCoords.add(new Vector2f(quad.s0(), quad.t0()));
+                texCoords.add(new Vector2f(quad.s1(), quad.t0()));
+                texCoords.add(new Vector2f(quad.s1(), quad.t1()));
+                texCoords.add(new Vector2f(quad.s0(), quad.t1()));
+
             }
 
             int fontId = fonts.indexOf(font);
             int offset = index * 4 * VERTEX_SIZE;
             Color color = text.getColor();
 
-            Vector2f cameraSize = Window.getScene().getCamera().getSize();
-            Vector2f cameraPosition = Window.getScene().getCamera().getPosition();
             float aspectRatio = Window.getScene().getCamera().getAspectRatio();
 
-            float positionX = (transform.getPosition().x - cameraPosition.x) / cameraSize.x;
-            float positionY = (transform.getPosition().y - cameraPosition.y) / cameraSize.y * aspectRatio;
+            float positionX = transform.getPosition().x;
+            float positionY = transform.getPosition().y * aspectRatio;
 
             float sizeX = transform.getSize().x;
             float sizeY = transform.getSize().y * aspectRatio;
@@ -288,19 +285,25 @@ public class TextBatch extends RenderBatch {
                 transformMatrix.scale(transform.getScale().x, transform.getScale().y, 1);
             }
 
-            for (int i = 0; i < positions.size(); i++) {
+            if (isRotated) {
+                for (int i = 0; i < positions.size(); i++) {
 
-                if (isRotated)
                     currentPosition = new Vector4f(//
-                            (positions.get(i).x - offsetX) / cameraSize.x, //
-                            (positions.get(i).y - offsetY) / cameraSize.y, 0, 1).mul(transformMatrix);
-                else
-                    currentPosition = new Vector4f(//
-                            positionX + (positions.get(i).x - offsetX) / cameraSize.x * transform.getScale().x,
-                            positionY + (positions.get(i).y - offsetY) / cameraSize.y * transform.getScale().y, 0, 1);
+                            (positions.get(i).x - offsetX), //
+                            (positions.get(i).y - offsetY), 0, 1).mul(transformMatrix);
 
-                loadVertexProperties(offset, currentPosition, color, texCoords.get(i), fontId);
-                offset += VERTEX_SIZE;
+                    loadVertexProperties(offset, currentPosition, color, texCoords.get(i), fontId);
+                    offset += VERTEX_SIZE;
+                }
+            } else {
+                for (int i = 0; i < positions.size(); i++) {
+                    currentPosition = new Vector4f(//
+                            positionX + (positions.get(i).x - offsetX) * transform.getScale().x,
+                            positionY + (positions.get(i).y - offsetY) * transform.getScale().y, 0, 1);
+
+                    loadVertexProperties(offset, currentPosition, color, texCoords.get(i), fontId);
+                    offset += VERTEX_SIZE;
+                }
 
             }
         }

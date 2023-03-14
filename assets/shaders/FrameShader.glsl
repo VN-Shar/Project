@@ -1,4 +1,3 @@
-#type vertex
 
 #version 330 core
 layout(location=0)in vec3 aPos;
@@ -14,10 +13,10 @@ void main()
 {
     fColor=aColor;
 
-    gl_Position=uProjection*uView*vec4(aPos,1.);
+    gl_Position=uProjection*uView*vec4(aPos,1.0);
 }
 
-#type fragment
+//Type
 #version 330 core
 
 in vec4 fColor;

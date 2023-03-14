@@ -6,6 +6,8 @@ import java.nio.IntBuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 
+import engine.util.Log;
+
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -74,7 +76,7 @@ public class Texture {
             glGenerateMipmap(GL_TEXTURE_2D);
 
             if (GL11.glGetError() != 0)
-                System.out.println("Bug: " + GL11.glGetError());
+                Log.error("Bug: " + GL11.glGetError());
 
             stbi_image_free(image);
 

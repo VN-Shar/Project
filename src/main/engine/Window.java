@@ -7,10 +7,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import engine.editor.scenes.EditorScene;
-import engine.event.EventHandler;
-import engine.event.EventType;
 import engine.input.InputListener;
 import engine.renderer.VisualServer;
+import engine.util.Log;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -107,8 +106,6 @@ public class Window {
         // Setup an error callback
         GLFWErrorCallback.createPrint(System.err).set();
 
-        EventHandler.invoke(EventType.EngineInit);
-
         // Initialize GLFW
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW.");
@@ -163,9 +160,7 @@ public class Window {
 
         windowSizeChanged(glfwWindow, local_width, local_height);
 
-        EventHandler.invoke(EventType.EngineLoad);
-
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+        Log.info("Hello LWJGL " + Version.getVersion() + "!");
 
     }
 
@@ -202,7 +197,7 @@ public class Window {
                 fps = Math.round(60 / totalTime);
                 totalTime = 0;
 
-                System.out.println("FPS: " + fps);
+                Log.info("FPS: " + fps);
             }
         }
     }
@@ -212,7 +207,6 @@ public class Window {
     }
 
     private void close() {
-        EventHandler.invoke(EventType.EngineClose);
 
         Window.scene.free();
 

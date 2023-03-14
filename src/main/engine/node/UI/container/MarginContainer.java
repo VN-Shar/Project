@@ -4,7 +4,6 @@ import org.joml.Vector2f;
 
 import engine.node.Node;
 import engine.node.Node2D;
-import engine.node._2D.FlagType.PositionType;
 
 public class MarginContainer extends Container {
 
@@ -14,7 +13,7 @@ public class MarginContainer extends Container {
     private float marginBottom = 0;
 
     public MarginContainer() {
-        getTransform().onTransformChanged((trans) -> resize());
+        getTransform().onTransformChanged.connect((trans) -> resize());
     }
 
     public float getMarginLeft() {
@@ -56,11 +55,6 @@ public class MarginContainer extends Container {
         setMarginBottom(margin);
     }
 
-    public void addChild(Node2D child) {
-        super.addChild(child);
-        child.setPositionType(PositionType.TOP_LEFT);
-    }
-
     public void resize() {
         for (Node c : getChildren()) {
             // Skip node that is not inherit from Node2D
@@ -69,8 +63,16 @@ public class MarginContainer extends Container {
 
             Node2D child = (Node2D) c;
 
-            child.getTransform().setPosition(new Vector2f(marginLeft, marginTop));
-            child.getTransform().setSize(new Vector2f(getTransform().getSize()).sub(marginLeft + marginRight, marginTop + marginBottom));
+            switch (child.getSizeFlag()) {
+                case EXPAND:
+                    child.getTransform().setPosition(new Vector2f(marginLeft, marginTop));
+                    child.getTransform().setSize(new Vector2f(getTransform().getSize()).sub(marginLeft + marginRight,
+                            marginTop + marginBottom));
+                case ORIGIN:
+                    child.getTransform().setPosition(new Vector2f(marginLeft, marginTop)
+                            .add(new Vector2f(marginLeft + marginRight, marginTop + marginBottom)
+                                    .sub(child.getTransform().getSize()).div(2)));
+            }
         }
     }
 }

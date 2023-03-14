@@ -2,11 +2,11 @@ package engine.node;
 
 import org.joml.Vector2f;
 
+import engine.node.FlagType.PositionFlag;
+import engine.node.FlagType.PositionType;
+import engine.node.FlagType.SizeFlag;
 import engine.node.UI.Color;
 import engine.node.UI.container.Container;
-import engine.node._2D.FlagType.PositionFlag;
-import engine.node._2D.FlagType.PositionType;
-import engine.node._2D.FlagType.SizeFlag;
 
 public class Node2D extends Node {
 
@@ -15,16 +15,21 @@ public class Node2D extends Node {
     private Color color = new Color(1, 1, 1, 1);
 
     private PositionFlag positionFlag = PositionFlag.CONTAINER;
-    private SizeFlag sizeFlag = SizeFlag.CONTAINER;
+    private SizeFlag sizeFlag = SizeFlag.EXPAND;
     private PositionType positionType = PositionType.TOP_LEFT;
 
-    public static Vector2f[] texCoords = { new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector2f(0, 1) };
+    public static Vector2f[] texCoords = { new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0),
+            new Vector2f(0, 1) };
 
-    public void setClean() {
+    public Node2D() {
+        getTransform().onTransformChanged.connect((trans) -> dirty());
+    }
+
+    public void clean() {
         this.isDirty = false;
     }
 
-    public void setDirty() {
+    public void dirty() {
         this.isDirty = true;
     }
 

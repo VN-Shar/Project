@@ -1,7 +1,6 @@
 package engine.renderer;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -15,10 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import engine.Window;
+import engine.node.Transform2D;
+import engine.node.FlagType.PositionType;
 import engine.node.UI.Color;
 import engine.node._2D.Frame;
-import engine.node._2D.Transform2D;
-import engine.node._2D.FlagType.PositionType;
 
 public class FrameBatch extends RenderBatch {
 
@@ -52,6 +51,7 @@ public class FrameBatch extends RenderBatch {
                 if (frame.isDirty()) {
                     loadVertexProperties(frame, frameIndex);
                     frameIndex += 1;
+                    frame.clean();
                 }
             }
         }
@@ -96,19 +96,15 @@ public class FrameBatch extends RenderBatch {
         Color color = frame.getColor();
 
         // Add vertices with the appropriate properties
-        Vector2f cameraSize = Window.getScene().getCamera().getSize();
-        Vector2f cameraPosition = Window.getScene().getCamera().getPosition();
         float aspectRatio = Window.getScene().getCamera().getAspectRatio();
 
         Transform2D transform = frame.getGlobalTransform();
 
-        // System.out.println(transform);
+        float positionX = transform.getPosition().x;
+        float positionY = transform.getPosition().y * aspectRatio;
 
-        float positionX = (transform.getPosition().x - cameraPosition.x) / cameraSize.x;
-        float positionY = (transform.getPosition().y - cameraPosition.y) / cameraSize.y * aspectRatio;
-
-        float sizeX = transform.getSize().x / cameraSize.x;
-        float sizeY = transform.getSize().y / cameraSize.y * aspectRatio;
+        float sizeX = transform.getSize().x;
+        float sizeY = transform.getSize().y * aspectRatio;
 
         float offsetX = 0;
         float offsetY = 0;
@@ -160,10 +156,10 @@ public class FrameBatch extends RenderBatch {
                 break;
             }
 
-            currentPosition = new Vector4f((positionX + drawX) * transform.getScale().x, (positionY + drawY) * transform.getScale().x, 0, 1);
+            currentPosition = new Vector4f(positionX + drawX * transform.getScale().x, positionY + drawY * transform.getScale().y, 0, 1);
 
             if (isRotated)
-                currentPosition = new Vector4f(drawX, drawY, 0, 1).mul(transformMatrix);
+                currentPosition = new Vector4f(drawX, drawY - sizeY, 0, 1).mul(transformMatrix);
 
             loadVertexProperties(offset, currentPosition, color);
             offset += VERTEX_SIZE;

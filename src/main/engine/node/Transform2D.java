@@ -1,9 +1,8 @@
-package engine.node._2D;
-
-import java.util.LinkedList;
-import java.util.function.Consumer;
+package engine.node;
 
 import org.joml.Vector2f;
+
+import engine.event.Signal;
 
 public class Transform2D {
 
@@ -12,33 +11,29 @@ public class Transform2D {
     private Vector2f scale = new Vector2f();
     private float rotation = 0.0f;
 
-    public LinkedList<Consumer<Transform2D>> callbacks = new LinkedList<>();
+    public Signal<Transform2D> onTransformChanged = new Signal<Transform2D>();
 
     public Transform2D() {
-        init(new Vector2f(0, 0), new Vector2f(1, 1), new Vector2f(1, 1), 0);
+        this(new Vector2f(0, 0), new Vector2f(1, 1), new Vector2f(1, 1), 0);
     }
 
     public Transform2D(Vector2f position) {
-        init(position, new Vector2f(1, 1), new Vector2f(1, 1), 0);
+        this(position, new Vector2f(1, 1), new Vector2f(1, 1), 0);
     }
 
     public Transform2D(Vector2f position, Vector2f size) {
-        init(position, size, new Vector2f(1, 1), 0);
+        this(position, size, new Vector2f(1, 1), 0);
     }
 
     public Transform2D(Vector2f position, Vector2f size, Vector2f scale) {
-        init(position, size, scale, 0);
-    }
-
-    public Transform2D(Vector2f position, Vector2f size, Vector2f scale, float rotation) {
-        init(position, size, scale, rotation);
+        this(position, size, scale, 0);
     }
 
     public Transform2D(Transform2D transform) {
-        init(transform.position, transform.size, transform.scale, transform.rotation);
+        this(transform.position, transform.size, transform.scale, transform.rotation);
     }
 
-    public void init(Vector2f position, Vector2f size, Vector2f scale, float rotation) {
+    public Transform2D(Vector2f position, Vector2f size, Vector2f scale, float rotation) {
         this.position.set(position);
         this.scale.set(scale);
         this.size.set(size);
@@ -49,15 +44,22 @@ public class Transform2D {
         return this.position;
     }
 
+    public Vector2f getPositionCopy() {
+        return new Vector2f(this.position);
+    }
+
     public Transform2D setPosition(Vector2f position) {
         this.position = position;
-        invoke();
+        onTransformChanged.emit(this);
         return this;
     }
 
     public Transform2D move(Vector2f position) {
+        if (position.x == 0 && position.y == 0)
+            return this;
+
         this.position.add(position);
-        invoke();
+        onTransformChanged.emit(this);
         return this;
     }
 
@@ -65,9 +67,13 @@ public class Transform2D {
         return this.size;
     }
 
+    public Vector2f getSizeCopy() {
+        return new Vector2f(this.size);
+    }
+
     public Transform2D setSize(Vector2f size) {
         this.size = size;
-        invoke();
+        onTransformChanged.emit(this);
         return this;
     }
 
@@ -75,21 +81,43 @@ public class Transform2D {
         return this.scale;
     }
 
+    public Vector2f getScaleCopy() {
+        return new Vector2f(this.scale);
+    }
+
     public Transform2D setScale(Vector2f scale) {
         this.scale = scale;
-        invoke();
+        onTransformChanged.emit(this);
         return this;
     }
 
     public Transform2D setScale(float scale) {
         this.scale = new Vector2f(scale, scale);
-        invoke();
+        onTransformChanged.emit(this);
         return this;
     }
 
     public Transform2D addScale(Vector2f scale) {
+        this.scale.add(scale);
+        onTransformChanged.emit(this);
+        return this;
+    }
+
+    public Transform2D addScale(float scale) {
+        this.scale.add(scale, scale);
+        onTransformChanged.emit(this);
+        return this;
+    }
+
+    public Transform2D mulScale(Vector2f scale) {
         this.scale.mul(scale);
-        invoke();
+        onTransformChanged.emit(this);
+        return this;
+    }
+
+    public Transform2D mulScale(float scale) {
+        this.scale.mul(scale);
+        onTransformChanged.emit(this);
         return this;
     }
 
@@ -99,19 +127,19 @@ public class Transform2D {
 
     public Transform2D setRotation(float rotation) {
         this.rotation = rotation;
-        invoke();
+        onTransformChanged.emit(this);
         return this;
     }
 
     public Transform2D addRotation(float rotation) {
         this.rotation += rotation;
-        invoke();
+        onTransformChanged.emit(this);
         return this;
     }
 
     public Transform2D translate(Transform2D transform) {
         return this.move(transform.position)//
-                .addScale(transform.scale)//
+                .mulScale(transform.scale)//
                 .addRotation(transform.rotation);
     }
 
@@ -131,7 +159,7 @@ public class Transform2D {
         return rotate(new Vector2f(position.x - size.x * scale.x / 2, position.y + size.y * scale.y / 2));
     }
 
-    private Vector2f rotate(Vector2f target) {
+    public Vector2f rotate(Vector2f target) {
         return rotate(position, target, rotation);
     }
 
@@ -147,20 +175,25 @@ public class Transform2D {
     }
 
     public Transform2D copy() {
-        return new Transform2D(new Vector2f(this.position), new Vector2f(this.size), new Vector2f(this.scale), this.rotation);
+        return new Transform2D(new Vector2f(this.position), new Vector2f(this.size), new Vector2f(this.scale),
+                this.rotation);
     }
 
-    public void copy(Transform2D target) {
-        target.position.set(this.position);
-        target.size.set(this.size);
-        target.scale.set(this.scale);
-        target.rotation = this.rotation;
+    public void copyFrom(Transform2D target) {
+        this.position.set(target.position);
+        this.size.set(target.size);
+        this.scale.set(target.scale);
+        this.rotation = target.rotation;
+
+        onTransformChanged.emit(this);
     }
 
     @Override
+
     public String toString() {
-        return "position:" + position.toString() + " size: " + size.toString() + " scale:" + scale.toString() + " rotation:"
-                + String.valueOf(rotation);
+        return "position: (" + position.x + ", " + position.y + ") size: (" + size.x + ", " + size.y + ") scale: ("
+                + scale.x + ", " + scale.y
+                + ") rotation:" + String.valueOf(rotation);
     }
 
     public boolean equals(Object o) {
@@ -173,18 +206,5 @@ public class Transform2D {
         Transform2D t = (Transform2D) o;
 
         return t.position.equals(this.position) && t.scale.equals(this.scale) && t.rotation == this.rotation;
-    }
-
-    public void invoke() {
-        for (Consumer<Transform2D> callback : callbacks) {
-            callback.accept(copy());
-        }
-    }
-
-    public void onTransformChanged(Consumer<Transform2D> callback) {
-        if (callbacks.contains(callback))
-            return;
-        callbacks.add(callback);
-
     }
 }
